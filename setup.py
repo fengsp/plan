@@ -26,6 +26,15 @@ setup(
                 'with a clear and beautiful syntax.',
     long_description=__doc__,
     packages=['plan'],
+    entry_points={
+        'console_scripts': [
+            'plan-quickstart = plan.commands:quickstart',
+            'plan = plan.commands:plan'
+        ]
+    },
+    install_requires=[
+        'click'
+    ],
     zip_safe=False,
     classifiers=[
         'License :: OSI Approved :: BSD License',

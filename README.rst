@@ -1,9 +1,8 @@
 Plan
 ====
 
-Plan is a Python package for writing and deploying cron jobs with a clear
-and beautiful syntax.  Plan will convert Python-style configuration to
-cron syntax.
+Plan is a Python package for writing and deploying cron jobs.  Plan will 
+convert Python code to cron syntax.
 
 Installation
 ------------
@@ -24,7 +23,9 @@ Now we have an `schedule.py` file like this:
 
 .. code:: python
 
-    # pass
+    import plan
+
+    pass
 
 Command
 -------
