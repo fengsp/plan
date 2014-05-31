@@ -40,11 +40,11 @@ class Output(object):
         if stdout == '/dev/null' and stderr == '/dev/null':
             return "> /dev/null 2>&1"
         elif stdout and stderr:
-            return "> {stdout} 2> {stderr}".format(stdout=stdout, 
+            return ">> {stdout} 2>> {stderr}".format(stdout=stdout, 
                                                      stderr=stderr)
         elif stdout:
-            return "> {stdout}".format(stdout=stdout)
+            return ">> {stdout}".format(stdout=stdout)
         elif stderr:
-            return "2> {stderr}".format(stderr=stderr)
+            return "2>> {stderr}".format(stderr=stderr)
         else:
             ''

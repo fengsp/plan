@@ -43,9 +43,9 @@ def quickstart(path):
     """plan-quickstart"""
     write = True
     if os.path.isfile(path.name):
-        write = click.confirm("'%s' already exists, override?" %s path.name)
+        write = click.confirm("'%s' already exists, override?" % path.name)
     if write:
-        click.echo("[add] writing '%s'" %s path.name)
+        click.echo("[add] writing '%s'" % path.name)
         path.write(content)
         click.echo("[done]!")
 

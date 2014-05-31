@@ -46,7 +46,7 @@ class Plan(object):
 
     @property
     def comment_begin(self):
-        return "# Begin Plan generated jobs for: %s" %s self.name
+        return "# Begin Plan generated jobs for: %s" % self.name
 
     def cron(self):
         """Return a list of cron syntax jobs."""
@@ -54,7 +54,7 @@ class Plan(object):
 
     @property
     def comment_end(self):
-        return "# End Plan generated jobs for: %s" %s self.name
+        return "# End Plan generated jobs for: %s" % self.name
 
     def get_cron_content(self):
         """Your schedule jobs converted to cron syntax"""
@@ -79,7 +79,7 @@ class Plan(object):
                        "options to ensure your cronfile is valid.")
             sys.exit(1)
         else:
-            click.echo("[write] crontab file %s" %s action)
+            click.echo("[write] crontab file %s" % action)
             sys.exit(0)
         finally:
             tmp_cronfile.close()
@@ -115,9 +115,9 @@ class Plan(object):
             crontab_content = ''
 
         # Check for unbegined or unended block
-        comment_begin_re = re.compile(r"^%s\s*$" %s self.comment_begin)
-        comment_end_re = re.compile(r"^%s\s*$" %s self.comment_end)
-        cron_block_re = re.compile(r"^%s\s*$.+^%s\s*$" %s 
+        comment_begin_re = re.compile(r"^%s\s*$" % self.comment_begin)
+        comment_end_re = re.compile(r"^%s\s*$" % self.comment_end)
+        cron_block_re = re.compile(r"^%s\s*$.+^%s\s*$" % 
                        (self.comment_begin, self.comment_end), re.M|re.S)
                        
         comment_begin_match = comment_begin_re.search(current_crontab)
