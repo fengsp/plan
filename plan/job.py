@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import os
 import sys
 import re
 import collections
@@ -53,9 +54,9 @@ PREDEFINED_DEFINITIONS = {"yearly", "annually", "monthly", "weekly",
 
 
 def is_month(time):
-    """Tell whether time is one of the monthes.
+    """Tell whether time is one of the month names.
     
-    :param time: A string of time.
+    :param time: a string of time.
     """
     return time[:3].lower() in MONTH_MAP
 
@@ -63,7 +64,7 @@ def is_month(time):
 def is_week(time):
     """Tell whether time is one of the days of week.
     
-    :param time: A string of time.
+    :param time: a string of time.
     """
     return time[:3].lower() in WEEK_MAP or \
                         time.lower() in ('weekday', 'weekend')
@@ -79,27 +80,27 @@ def get_frequency(every):
     """
     return int(every[:every.find('.')])
 
+
 class Job(object):
     """The plan job base class.
 
-    reboot yearly monthly weekly daily hourly perminute midnight
+    :param task: this is what the job does.
+    :param every: how often does the job run.
+    :param at: when does the job run.
+    :param path: the path you want to run the task on,
+                 default to be current working directory.
+    :param environment: the environment you want to run the task under.
+    :param output: the output redirection for the task.
     """
 
-    def __init__(self, task, every, at='', path=os.getcwd(), 
-                                           environment=None, output=None):
+    def __init__(self, task, every, at=None, path=os.getcwd(), 
+                                             environment=None, output=None):
         self.task = task
         self.every = every
         self.at = at
         self.path = path
         self.environment = environment
         self.output = str(Output(output))
-
-    @property
-    def main_template(self):
-        return "/bin/bash -l -c '{job}'"
-
-    def job_template(self):
-        raise NotImplementedError()
 
     @property
     def env(self):
@@ -111,158 +112,32 @@ class Job(object):
         return ' '.join(kv_pairs)
 
     @property
-    def job_in_cron_syntax(self):
-        kwargs = {
-            "path": self.path,
-            "environment": self.env
-            "task": self.task,
-            "output": self.output
-        }
-        job = self.job_template().format(**kwargs)
-        return self.main_template.format(job=job)
-
-    @property
-    def time_in_cron_syntax(self):
-        """Parse every into cron time syntax
-
-        every can be any of following values
-        
+    def main_template(self):
+        """The main job template.
         """
-        if CRON_TIME_SYNTAX_RE.match(self.every):
-            return self.every
-        elif self.every in PREDEFINED_DEFINITIONS:
-            return "@%s" % self.every
-        else:
-            return self.parse_time()
+        return "/bin/bash -l -c '{task}'"
 
-    def parse_every(self):
-
-        every = self.every
-
-        if '.minute' in every:
-            every_type, frequency = MINUTE, get_frequency(every)
-            if not frequency in range(1, 61):
-                raise RuntimeError("Your every value %s is invalid, out of"
-                                   " minute range[1-60]" % every)
-        elif '.hour' in every:
-            every_type, frequency = HOUR, get_frequency(every)
-            if not frequency in range(1, 25):
-                raise RuntimeError("Your every value %s is invalid, out of"
-                                   " hour range[1-24]" % every)
-        elif '.day' in every:
-            every_type, frequency = DAY, get_frequency(every)
-            if not frequency in range(1, 32):
-                raise RuntimeError("Your every value %s is invalid, out of"                                       " month day range[1-31]" % every)
-        elif '.month' in every or is_month(every):
-            every_type = MONTH
-            if '.' in every:
-                frequency = get_frequency(every)
-                if not frequency in range(1, 13):
-                    raise RuntimeError("Your every value %s is invalid, out of"                                       " month range[1-12]" % every)
-        elif '.year' in every:
-            every_type, frequency = MONTH, get_frequency(every)
-            if not frequency in range(1, 2):
-                raise RuntimeError("Your every value %s is invalid, out of"  
-                                   " year range[1]" % every)
-            self.every = "12.months"
-        elif is_week(every):
-            every_type = WEEK
-        else:
-            raise RuntimeError("Your every value %s is invalid" % every)
-        
-        return every_type
-    
-    def parse_at(self):
-
-        get_moment = lambda at: int(at[at.find('.') + 1:])
-
-        ats = self.at.split(' ')
-        at_map = collections.defaultdict(list)
-        
-        for at in ats:
-            if 'minute.' in at:
-                at_type, moment = MINUTE, get_moment(at)
-                if not moment in range(60):
-                    raise RuntimeError("Your at value %s is invalid"
-                                       " out of minute range[0-59]" % at)
-            elif 'hour.' in at:
-                at_type, moment = HOUR, get_moment(at)
-                if not moment in range(24):
-                    raise RuntimeError("Your at value %s is invalid"
-                                       " out of hour range[0-23]" % at)
-            elif 'day.' in at:
-                at_type, moment = DAY, get_moment(at)
-                if not moment in range(1, 32):
-                    raise RuntimeError("Your at value %s is invalid"
-                                       " out of month day range[1-31]" % at)
-            elif is_week(at)
-                at_type = WEEK
-                moment = self.parse_week(value)
-            else:
-                raise RuntimeError("Your at value %s is invalid" % at)
-            at_map[at_type].append(moment)
-
-        m = dict()
-        for at_type, moments in at_map.iteritems():
-            m[at_type] = ','.join(moments)
-
-        return m
-    
-    def validate_time(self):
-        """Validate every and at.
-
-        every: can be [1-60].minute [1-24].hour [1-31].day 
-                      [1-12].month [1].year
-                      jan feb mar apr may jun jul aug sep oct nov dec
-                      sun mon tue wed thu fri sat weekday weekend
-                      or any fullname of month names and weekday names(case
-                      insensitive)
-        at: when every is minute, can not be set
-            when every is hour, can be minute.[0-59]
-            when every is day of month, can be minute.[0-59], hour.[0-23]
-            when every is month, can be day.[1-31], day of week, 
-                                 minute.[0-59], hour.[0-23]
-            when every is day of week, can be minute.[0-59], hour.[0-23]
-
-            also can be comma seperated values
+    def task_template(self):
+        """The task template.  You should implement this in your subclass.
         """
-        every_type, every = self.parse_every(), self.every
-        ats = self.parse_at()
-        if every_type == MINUTE:
-            if ats:
-                raise RuntimeError("at can not be set when every is minute"
-                                   " related")
-        elif every_type == HOUR:
-            for at_type in ats:
-                if at_type not in (MINUTE):
-                    raise RuntimeError("%s can not be set when every is"
-                                       " hour related" %s at_type)
-        elif every_type == DAY:
-            for at_type in ats:
-                if at_type not in (MINUTE, HOUR):
-                    raise RuntimeError("%s can not be set when every is"
-                                       " month day related" %s at_type)
-        elif every_type == MONTH:
-            for at_type in ats:
-                if at_type not in (MINUTE, HOUR, DAY, WEEK):
-                    raise RuntimeError("%s can not be set when every is"
-                                       " month related" %s at_type)
-        elif every_type == WEEK:
-            for at_type in ats:
-                if at_type not in (MINUTE, HOUR):
-                    raise RuntimeError("%s can not be set when every is"
-                                       " week day related" %s at_type)
+        raise NotImplementedError()
 
-        return every_type, every, ats
+    def process_template(self, template):
+        """Process template content.  Drop multiple spaces in a row and strip
+        it.
+        """
+        template = re.sub(r'\s+', r' ', template)
+        template = template.strip()
+        return template
 
     def produce_frequency_time(self, frequency, maximum, start=0):
-        """Get frequency into comma separated times.
+        """Translate frequency into comma separated times.
         """
-        # how many units one time have
+        # how many units one time type have
         length = maximum - start + 1
         # if every is the same with unit length
         if frequency == length:
-            return start
+            return str(start)
         # else if every is one unit, we use '*'
         elif frequency == 1:
             return '*'
@@ -271,12 +146,18 @@ class Job(object):
             times = range(start, maximum + 1, frequency)
             if length % frequency:
                 del times[0]
+            times = map(str, times)
             return ','.join(times)
 
     def parse_month(self, month):
-        """Takes
-        jan feb mar apr may jun jul aug sep oct nov dec
-        (n).month
+        """Parses month into month numbers.  Month can only occur in
+        every value.
+
+        :param month: this parameter can be the following values:
+        
+                          jan feb mar apr may jun jul aug sep oct nov dec
+                          and all of those full month names(case insenstive)
+                          <int:n>.month
         """
         if '.' in month:
             frequency = get_frequency(month)
@@ -286,11 +167,14 @@ class Job(object):
             return MONTH_MAP[month]
 
     def parse_week(self, week):
-        """Takes
-        sun mon tue wed thu fri sat
-        sunday monday tuesday wednesday thursday friday saturday
-        or any string comma seperated of those weekdays
-        weekday weedend
+        """Parses day of week name into week numbers.
+
+        :param week: this parameter can be the following values:
+                     
+                         sun mon tue wed thu fri sat
+                         sunday monday tuesday wednesday thursday friday 
+                         saturday
+                         weekday weedend(case insenstive)
         """
         if week.lower() == "weekday":
             return "1,2,3,4,5"
@@ -300,8 +184,141 @@ class Job(object):
             week = week[:3].lower()
             return WEEK_MAP[week]
 
+    def parse_every(self):
+        """Parse every value.
+        
+        :return: every_type.
+        """
+        every = self.every
+
+        if '.minute' in every:
+            every_type, frequency = MINUTE, get_frequency(every)
+            if not frequency in range(1, 61):
+                raise ParseError("Your every value %s is invalid, out of"
+                                 " minute range[1-60]" % every)
+        elif '.hour' in every:
+            every_type, frequency = HOUR, get_frequency(every)
+            if not frequency in range(1, 25):
+                raise ParseError("Your every value %s is invalid, out of"
+                                 " hour range[1-24]" % every)
+        elif '.day' in every:
+            every_type, frequency = DAY, get_frequency(every)
+            if not frequency in range(1, 32):
+                raise ParseError("Your every value %s is invalid, out of"
+                                 " month day range[1-31]" % every)
+        elif '.month' in every or is_month(every):
+            every_type = MONTH
+            if '.' in every:
+                frequency = get_frequency(every)
+                if not frequency in range(1, 13):
+                    raise ParseError("Your every value %s is invalid, out of"
+                                     " month range[1-12]" % every)
+        elif '.year' in every:
+            every_type, frequency = MONTH, get_frequency(every)
+            if not frequency in range(1, 2):
+                raise ParseError("Your every value %s is invalid, out of"  
+                                 " year range[1]" % every)
+            # Just handle months internally
+            self.every = "12.months"
+        elif is_week(every):
+            every_type = WEEK
+        else:
+            raise ParseError("Your every value %s is invalid" % every)
+        
+        return every_type
+    
+    def parse_at(self):
+        """Parse at value into (at_type, moment) pairs.
+        """
+        pairs = dict()
+        if not self.at:
+            return pairs
+
+        get_moment = lambda at: int(at[at.find('.') + 1:])
+        ats = self.at.split(' ')
+        at_map = collections.defaultdict(list)
+        
+        # Parse at value into (at_type, moments_list) pairs.
+        # One same at_type can have multiple moments like:
+        # at = "minute.5 minute.10 hour.2"
+        for at in ats:
+            if 'minute.' in at:
+                at_type, moment = MINUTE, get_moment(at)
+                if not moment in range(60):
+                    raise ParseError("Your at value %s is invalid"
+                                     " out of minute range[0-59]" % at)
+            elif 'hour.' in at:
+                at_type, moment = HOUR, get_moment(at)
+                if not moment in range(24):
+                    raise ParseError("Your at value %s is invalid"
+                                     " out of hour range[0-23]" % at)
+            elif 'day.' in at:
+                at_type, moment = DAY, get_moment(at)
+                if not moment in range(1, 32):
+                    raise ParseError("Your at value %s is invalid"
+                                     " out of month day range[1-31]" % at)
+            elif is_week(at):
+                at_type = WEEK
+                moment = self.parse_week(at)
+            else:
+                raise ParseError("Your at value %s is invalid" % at)
+            at_map[at_type].append(moment)
+
+        # comma seperate same at_type moments
+        for at_type, moments in at_map.iteritems():
+            pairs[at_type] = ','.join(moments)
+
+        return pairs
+    
+    def validate_time(self):
+        """Validate every and at value.
+
+        every: can be [1-60].minute [1-24].hour [1-31].day 
+                      [1-12].month [1].year
+                      jan feb mar apr may jun jul aug sep oct nov dec
+                      sun mon tue wed thu fri sat weekday weekend
+                      or any fullname of month names and day of week names
+                      (case insensitive)
+        at: when every is minute, can not be set
+            when every is hour, can be minute.[0-59]
+            when every is day of month, can be minute.[0-59], hour.[0-23]
+            when every is month, can be day.[1-31], day of week, 
+                                 minute.[0-59], hour.[0-23]
+            when every is day of week, can be minute.[0-59], hour.[0-23]
+
+            at can be multiple at values seperated by one space.
+        """
+        every_type, every = self.parse_every(), self.every
+        ats = self.parse_at()
+        if every_type == MINUTE:
+            if ats:
+                raise ValidationError("at can not be set when every is"
+                                      " minute related")
+        elif every_type == HOUR:
+            for at_type in ats:
+                if at_type not in (MINUTE):
+                    raise ValidationError("%s can not be set when every is"
+                                          " hour related" % at_type)
+        elif every_type == DAY:
+            for at_type in ats:
+                if at_type not in (MINUTE, HOUR):
+                    raise ValidationError("%s can not be set when every is"
+                                          " month day related" % at_type)
+        elif every_type == MONTH:
+            for at_type in ats:
+                if at_type not in (MINUTE, HOUR, DAY, WEEK):
+                    raise ValidationError("%s can not be set when every is"
+                                          " month related" % at_type)
+        elif every_type == WEEK:
+            for at_type in ats:
+                if at_type not in (MINUTE, HOUR):
+                    raise ValidationError("%s can not be set when every is"
+                                          " week day related" % at_type)
+
+        return every_type, every, ats
+
     def parse_time(self):
-        """Parse time into cron time syntax::
+        """Parse every and at into cron time syntax::
 
             # * * * * *  command to execute
             # ┬ ┬ ┬ ┬ ┬
@@ -343,15 +360,42 @@ class Job(object):
         return ' '.join(time)
 
     @property
-    def cron_entry_content(self):
-        return ' '.join([self.time_in_cron_syntax, self.job_in_cron_syntax])
+    def task_in_cron_syntax(self):
+        """Cron content task part.
+        """
+        kwargs = {
+            "path": self.path,
+            "environment": self.env,
+            "task": self.task,
+            "output": self.output
+        }
+        task = self.task_template().format(**kwargs)
+        task = self.process_template(task)
+        main = self.main_template.format(task=task)
+        return self.process_template(main)
+
+    @property
+    def time_in_cron_syntax(self):
+        """Cron content time part.
+        """
+        if CRON_TIME_SYNTAX_RE.match(self.every):
+            return self.every
+        elif self.every in PREDEFINED_DEFINITIONS:
+            return "@%s" % self.every
+        else:
+            return self.parse_time()
+
+    @property
+    def cron(self):
+        """Job in cron syntax."""
+        return ' '.join([self.time_in_cron_syntax, self.task_in_cron_syntax])
 
 
 class CommandJob(Job):
     """The command job.
     """
 
-    def job_template(self):
+    def task_template(self):
         return '{task} {output}'
 
 
@@ -359,6 +403,6 @@ class ScriptJob(Job):
     """The script job.
     """
 
-    def job_template(self):
+    def task_template(self):
         return 'cd {path} && {environment} %s {task} {output}'\
-                            % sys.executable
+                                        % sys.executable

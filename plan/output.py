@@ -3,7 +3,7 @@
     plan.output
     ~~~~~~~~~~~
 
-    Output for Plan.
+    Output for Plan.  This is used for cron job output redirection.
 
     :copyright: (c) 2014 by Shipeng Feng.
     :license: BSD, see LICENSE for more details.
@@ -13,7 +13,7 @@ from ._compat import string_types
 
 
 class Output(object):
-    """The plan output class.
+    """The plan output class used for command line output redirection.
     """
 
     def __init__(self, output=None):
@@ -27,7 +27,7 @@ class Output(object):
         elif isinstance(self.output, dict):
             return self.from_dict()
         else:
-            return ''
+            raise TypeError("Illegal output value %s" % self.output)
     
     def from_string(self):
         if self.output == "null":
@@ -47,4 +47,4 @@ class Output(object):
         elif stderr:
             return "2>> {stderr}".format(stderr=stderr)
         else:
-            ''
+            return ''
