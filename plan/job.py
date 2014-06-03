@@ -9,37 +9,117 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import sys
 import re
+import collections
 
+from .output import Output
+
+
+# Time types
+MINUTE = "minute"
+HOUR = "hour"
+DAY = "day of month"
+MONTH = "month"
+WEEK = "day of week"
+
+MONTH_MAP = {
+    "jan": "1",
+    "feb": "2",
+    "mar": "3",
+    "apr": "4", 
+    "may": "5",
+    "jun": "6",
+    "jul": "7",
+    "aug": "8", 
+    "sep": "9",
+    "oct": "10",
+    "nov": "11",
+    "dec": "12"
+}
+WEEK_MAP = {
+    "sun": "0",
+    "mon": "1",
+    "tue": "2",
+    "wed": "3",
+    "thu": "4",
+    "fri": "5",
+    "sat": "6"
+}
+
+CRON_TIME_SYNTAX_RE = re.compile(r"^.+\s+.+\s+.+\s+.+\s+.+$")
+PREDEFINED_DEFINITIONS = {"yearly", "annually", "monthly", "weekly",
+                          "daily", "hourly", "reboot"}
+
+
+def is_month(time):
+    """Tell whether time is one of the monthes.
+    
+    :param time: A string of time.
+    """
+    return time[:3].lower() in MONTH_MAP
+
+
+def is_week(time):
+    """Tell whether time is one of the days of week.
+    
+    :param time: A string of time.
+    """
+    return time[:3].lower() in WEEK_MAP or \
+                        time.lower() in ('weekday', 'weekend')
+
+
+def get_frequency(every):
+    """Get frequency value from one every type value:
+
+    >>> get_frequency('3.days')
+    3
+
+    :param every: One every type value.
+    """
+    return int(every[:every.find('.')])
 
 class Job(object):
     """The plan job base class.
 
     reboot yearly monthly weekly daily hourly perminute midnight
     """
-    
-    cron_time_syntax_re = re.compile(r"^.+\s+.+\s+.+\s+.+\s+.+$")
-    predefined_definitions = {"yearly", "annually", "monthly", "weekly",
-                              "daily", "hourly", "reboot"}
 
-    def __init__(self):
+    def __init__(self, task, every, at='', path=os.getcwd(), 
+                                           environment=None, output=None):
+        self.task = task
         self.every = every
         self.at = at
         self.path = path
         self.environment = environment
-        self.task = task
-        self.output = output
+        self.output = str(Output(output))
 
     @property
     def main_template(self):
-        return "/bin/bash -l -c {job}"
+        return "/bin/bash -l -c '{job}'"
 
     def job_template(self):
         raise NotImplementedError()
 
     @property
+    def env(self):
+        if not self.environment:
+            return ''
+        kv_pairs = []
+        for k, v in self.environment.iteritems():
+            kv_pairs.append('='.join((k, v)))
+        return ' '.join(kv_pairs)
+
+    @property
     def job_in_cron_syntax(self):
-        return self.main_template.format(job=self.job_template())
+        kwargs = {
+            "path": self.path,
+            "environment": self.env
+            "task": self.task,
+            "output": self.output
+        }
+        job = self.job_template().format(**kwargs)
+        return self.main_template.format(job=job)
 
     @property
     def time_in_cron_syntax(self):
@@ -48,38 +128,177 @@ class Job(object):
         every can be any of following values
         
         """
-        if self.cron_time_syntax_re.match(self.every):
+        if CRON_TIME_SYNTAX_RE.match(self.every):
             return self.every
-        elif self.every in self.predefined_definitions:
+        elif self.every in PREDEFINED_DEFINITIONS:
             return "@%s" % self.every
         else:
             return self.parse_time()
+
+    def parse_every(self):
+
+        every = self.every
+
+        if '.minute' in every:
+            every_type, frequency = MINUTE, get_frequency(every)
+            if not frequency in range(1, 61):
+                raise RuntimeError("Your every value %s is invalid, out of"
+                                   " minute range[1-60]" % every)
+        elif '.hour' in every:
+            every_type, frequency = HOUR, get_frequency(every)
+            if not frequency in range(1, 25):
+                raise RuntimeError("Your every value %s is invalid, out of"
+                                   " hour range[1-24]" % every)
+        elif '.day' in every:
+            every_type, frequency = DAY, get_frequency(every)
+            if not frequency in range(1, 32):
+                raise RuntimeError("Your every value %s is invalid, out of"                                       " month day range[1-31]" % every)
+        elif '.month' in every or is_month(every):
+            every_type = MONTH
+            if '.' in every:
+                frequency = get_frequency(every)
+                if not frequency in range(1, 13):
+                    raise RuntimeError("Your every value %s is invalid, out of"                                       " month range[1-12]" % every)
+        elif '.year' in every:
+            every_type, frequency = MONTH, get_frequency(every)
+            if not frequency in range(1, 2):
+                raise RuntimeError("Your every value %s is invalid, out of"  
+                                   " year range[1]" % every)
+            self.every = "12.months"
+        elif is_week(every):
+            every_type = WEEK
+        else:
+            raise RuntimeError("Your every value %s is invalid" % every)
+        
+        return every_type
+    
+    def parse_at(self):
+
+        get_moment = lambda at: int(at[at.find('.') + 1:])
+
+        ats = self.at.split(' ')
+        at_map = collections.defaultdict(list)
+        
+        for at in ats:
+            if 'minute.' in at:
+                at_type, moment = MINUTE, get_moment(at)
+                if not moment in range(60):
+                    raise RuntimeError("Your at value %s is invalid"
+                                       " out of minute range[0-59]" % at)
+            elif 'hour.' in at:
+                at_type, moment = HOUR, get_moment(at)
+                if not moment in range(24):
+                    raise RuntimeError("Your at value %s is invalid"
+                                       " out of hour range[0-23]" % at)
+            elif 'day.' in at:
+                at_type, moment = DAY, get_moment(at)
+                if not moment in range(1, 32):
+                    raise RuntimeError("Your at value %s is invalid"
+                                       " out of month day range[1-31]" % at)
+            elif is_week(at)
+                at_type = WEEK
+                moment = self.parse_week(value)
+            else:
+                raise RuntimeError("Your at value %s is invalid" % at)
+            at_map[at_type].append(moment)
+
+        m = dict()
+        for at_type, moments in at_map.iteritems():
+            m[at_type] = ','.join(moments)
+
+        return m
     
     def validate_time(self):
         """Validate every and at.
 
-        every: can be [0-59].minute [0-23].hour [1-31].day 
-                      [0-6].week [1-12].month [1].year
-        at: can be minute.[0-59] hour.[0-23] day.[1-31] week.[0-6] 
-                   month.[1-12]
+        every: can be [1-60].minute [1-24].hour [1-31].day 
+                      [1-12].month [1].year
+                      jan feb mar apr may jun jul aug sep oct nov dec
+                      sun mon tue wed thu fri sat weekday weekend
+                      or any fullname of month names and weekday names(case
+                      insensitive)
+        at: when every is minute, can not be set
+            when every is hour, can be minute.[0-59]
+            when every is day of month, can be minute.[0-59], hour.[0-23]
+            when every is month, can be day.[1-31], day of week, 
+                                 minute.[0-59], hour.[0-23]
+            when every is day of week, can be minute.[0-59], hour.[0-23]
+
+            also can be comma seperated values
         """
-        pass
+        every_type, every = self.parse_every(), self.every
+        ats = self.parse_at()
+        if every_type == MINUTE:
+            if ats:
+                raise RuntimeError("at can not be set when every is minute"
+                                   " related")
+        elif every_type == HOUR:
+            for at_type in ats:
+                if at_type not in (MINUTE):
+                    raise RuntimeError("%s can not be set when every is"
+                                       " hour related" %s at_type)
+        elif every_type == DAY:
+            for at_type in ats:
+                if at_type not in (MINUTE, HOUR):
+                    raise RuntimeError("%s can not be set when every is"
+                                       " month day related" %s at_type)
+        elif every_type == MONTH:
+            for at_type in ats:
+                if at_type not in (MINUTE, HOUR, DAY, WEEK):
+                    raise RuntimeError("%s can not be set when every is"
+                                       " month related" %s at_type)
+        elif every_type == WEEK:
+            for at_type in ats:
+                if at_type not in (MINUTE, HOUR):
+                    raise RuntimeError("%s can not be set when every is"
+                                       " week day related" %s at_type)
+
+        return every_type, every, ats
 
     def produce_frequency_time(self, frequency, maximum, start=0):
         """Get frequency into comma separated times.
         """
-        # if every is the same with maximum
-        if frequency == 0:
+        # how many units one time have
+        length = maximum - start + 1
+        # if every is the same with unit length
+        if frequency == length:
             return start
         # else if every is one unit, we use '*'
         elif frequency == 1:
             return '*'
         # otherwise, we make steps comma separated
         else:
-            times = range(maximum+1)[start:maximum:frequency]
-            if (maximum + 1) % frequency:
+            times = range(start, maximum + 1, frequency)
+            if length % frequency:
                 del times[0]
             return ','.join(times)
+
+    def parse_month(self, month):
+        """Takes
+        jan feb mar apr may jun jul aug sep oct nov dec
+        (n).month
+        """
+        if '.' in month:
+            frequency = get_frequency(month)
+            return self.produce_frequency_time(frequency, 12, 1)
+        else:
+            month = month[:3].lower()
+            return MONTH_MAP[month]
+
+    def parse_week(self, week):
+        """Takes
+        sun mon tue wed thu fri sat
+        sunday monday tuesday wednesday thursday friday saturday
+        or any string comma seperated of those weekdays
+        weekday weedend
+        """
+        if week.lower() == "weekday":
+            return "1,2,3,4,5"
+        elif week.lower() == "weekend":
+            return "6,0"
+        else:
+            week = week[:3].lower()
+            return WEEK_MAP[week]
 
     def parse_time(self):
         """Parse time into cron time syntax::
@@ -92,26 +311,34 @@ class Job(object):
             # │ │ │ └───── month (1 - 12)
             # │ │ └─────── day of month (1 - 31)
             # │ └───────── hour (0 - 23)
-            # └─────────── min (0 - 59)
+            # └─────────── minute (0 - 59)
 
         """
-        # validation
+        every_type, every, ats = self.validate_time()
         time = ['*'] * 5
-        if self.every = "1.year":
-            self.every = "12.months"
-        every_num, every_unit = self.every.split('.')
-        at_unit, at_num = self.at.split('.')
-
-        if every_unit == "minute":
-            pass
-        elif every_unit == "hour":
-            pass
-        elif every_unit == "day":
-            pass
-        elif every_unit == "week":
-            pass
-        elif every_unit == "month":
-            pass
+        
+        if every_type == MINUTE:
+            frequency = get_frequency(every)
+            time[0] = self.produce_frequency_time(frequency, 59)
+        elif every_type == HOUR:
+            frequency = get_frequency(every)
+            time[0] = ats.get(MINUTE, '0')
+            time[1] = self.produce_frequency_time(frequency, 23)
+        elif every_type == DAY:
+            frequency = get_frequency(every)
+            time[0] = ats.get(MINUTE, '0')
+            time[1] = ats.get(HOUR, '0')
+            time[2] = self.produce_frequency_time(frequency, 31, 1)
+        elif every_type == MONTH:
+            time[0] = ats.get(MINUTE, '0')
+            time[1] = ats.get(HOUR, '0')
+            time[2] = ats.get(DAY, '1')
+            time[3] = self.parse_month(every)
+            time[4] = ats.get(WEEK, '*')
+        else:
+            time[0] = ats.get(MINUTE, '0')
+            time[1] = ats.get(HOUR, '0')
+            time[4] = self.parse_week(every)
 
         return ' '.join(time)
 
@@ -125,7 +352,7 @@ class CommandJob(Job):
     """
 
     def job_template(self):
-        return '{command} {output}'
+        return '{task} {output}'
 
 
 class ScriptJob(Job):
@@ -133,4 +360,5 @@ class ScriptJob(Job):
     """
 
     def job_template(self):
-        return 'cd {path} && {environment_variable}={environment} {script}' 
+        return 'cd {path} && {environment} %s {task} {output}'\
+                            % sys.executable
