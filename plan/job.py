@@ -404,5 +404,12 @@ class ScriptJob(Job):
     """
 
     def task_template(self):
-        return 'cd {path} && {environment} %s {task} {output}'\
-                                        % sys.executable
+        return 'cd {path} && {environment} %s {task} {output}' % sys.executable
+
+
+class ModuleJob(Job):
+    """The module job.
+    """
+
+    def task_template(self):
+        return '{environment} %s -m {task} {output}' % sys.executable
