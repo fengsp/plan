@@ -25,11 +25,10 @@ setup(
     description='A Python package for writing and deploying cron jobs '
                 'with a clear and beautiful syntax.',
     long_description=__doc__,
-    packages=['plan'],
+    packages=['plan', 'plan.testsuite'],
     entry_points={
         'console_scripts': [
-            'plan-quickstart = plan.commands:quickstart',
-            'plan = plan.commands:plan'
+            'plan-quickstart = plan.commands:quickstart'
         ]
     },
     install_requires=[
@@ -37,6 +36,8 @@ setup(
     ],
     zip_safe=False,
     classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
     ],
