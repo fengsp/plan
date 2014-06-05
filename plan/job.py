@@ -15,6 +15,7 @@ import re
 import collections
 
 from .output import Output
+from .exceptions import ParseError, ValidationError
 
 
 # Time types
@@ -115,7 +116,7 @@ class Job(object):
     def main_template(self):
         """The main job template.
         """
-        return "/bin/bash -l -c '{task}'"
+        return "{task}"
 
     def task_template(self):
         """The task template.  You should implement this in your subclass.
@@ -257,6 +258,9 @@ class Job(object):
                 if not moment in range(1, 32):
                     raise ParseError("Your at value %s is invalid"
                                      " out of month day range[1-31]" % at)
+            elif 'month.' in at or 'year.' in at:
+                raise ParseError("Your at value %s is invalid"
+                                 " can not set month or year" % at)
             elif is_week(at):
                 at_type = WEEK
                 moment = self.parse_week(at)
