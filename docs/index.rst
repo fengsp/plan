@@ -1,22 +1,12 @@
-.. Plan documentation master file, created by
-   sphinx-quickstart on Wed Jun  4 17:18:02 2014.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+:orphan:
 
-Welcome to Plan's documentation!
-================================
+Welcome to Plan
+===============
 
-Contents:
+.. image:: _static/plan-logo.png
+   :alt: Plan: Cron jobs in Python
+   :class: floatingflask
 
-.. toctree::
-   :maxdepth: 2
+Welcome to Plan's documentation.
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+.. include:: contents.rst.inc
