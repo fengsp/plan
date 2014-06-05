@@ -24,23 +24,26 @@ class Echo(object):
 
     @classmethod
     def message(cls, message):
-        self.echo("[message] %s" % message)
+        cls.echo("[message] %s" % message)
 
     @classmethod
     def write(cls, message):
-        self.echo("[write] %s" % message)
+        cls.echo("[write] %s" % message)
 
     @classmethod
     def fail(cls, message):
-        self.echo("[fail] %s" % message)
+        cls.echo("[fail] %s" % message)
 
     @classmethod
     def add(cls, message):
-        self.echo("[add] %s" % message)
+        cls.echo("[add] %s" % message)
 
     @classmethod
-    def done(cls):
-        self.echo("[done]!")
+    def done(cls, message=None):
+        if message:
+            cls.echo("[done] %s" % message)
+        else:
+            cls.echo("[done]!")
 
 
 SCHEDULE_TEMPLATE = """\
