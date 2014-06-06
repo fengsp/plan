@@ -12,13 +12,13 @@
 import sys
 import unittest
 
-from plan.testsuite import PlanTestCase
+from plan.testsuite import BaseTestCase
 from plan.job import is_month, is_week, get_frequency
 from plan.job import CommandJob, ScriptJob, ModuleJob
 from plan.exceptions import ParseError, ValidationError
 
 
-class BasicTestCase(PlanTestCase):
+class BasicTestCase(BaseTestCase):
     """Tests basic functions used by Job class."""
     
     def test_is_month(self):
@@ -41,7 +41,7 @@ class BasicTestCase(PlanTestCase):
         self.assert_equal(3, get_frequency('3.'))
 
 
-class JobTestCase(PlanTestCase):
+class JobTestCase(BaseTestCase):
 
     def test_task(self):
         job = CommandJob('/bin/task', every='weekend')

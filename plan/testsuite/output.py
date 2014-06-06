@@ -12,10 +12,10 @@
 import unittest
 
 from plan.output import Output
-from plan.testsuite import PlanTestCase
+from plan.testsuite import BaseTestCase
 
 
-class OutputTestCase(PlanTestCase):
+class OutputTestCase(BaseTestCase):
     
     def test_from_none(self):
         output = str(Output())

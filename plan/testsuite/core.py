@@ -9,16 +9,40 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import sys
 import unittest
 
-from plan.testsuite import PlanTestCase
+from plan.testsuite import BaseTestCase
 from plan.core import Plan
 
 
-class PlanTestCase(PlanTestCase):
+class PlanTestCase(BaseTestCase):
     
-    def test_test(self):
-        self.assert_true(True)
+    def test_cron_content(self):
+        plan = Plan()
+        plan.command('command', every='1.day')
+        plan.script('script.py', every='1.day', path='/web/scripts',
+                        environment={'key': 'value'}, output='null')
+        plan.module('calendar', every='1.day')
+        desired_cron_content = """\
+# Begin Plan generated jobs for: main
+0 0 * * * command
+0 0 * * * cd /web/scripts && key=value %s script.py > /dev/null 2>&1
+0 0 * * * %s -m calendar
+# End Plan generated jobs for: main
+""" % (sys.executable, sys.executable)
+        self.assert_equal(plan.cron_content, desired_cron_content)
+
+    def test_inject_kwargs(self):
+        plan = Plan('test', environment={'testkey': 'testvalue'},
+                     output=dict(stdout='/tmp/out.log'))
+        plan.script('script.py', every='1.day', path='/web/scripts')
+        desired_cron_content = """\
+# Begin Plan generated jobs for: test
+0 0 * * * cd /web/scripts && testkey=testvalue %s script.py >> /tmp/out.log 2>> /dev/null
+# End Plan generated jobs for: test
+""" % sys.executable
+        self.assert_equal(plan.cron_content, desired_cron_content)
 
 
 def suite():

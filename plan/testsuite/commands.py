@@ -15,7 +15,7 @@ import click
 from click.testing import CliRunner
 
 from plan.commands import Echo
-from plan.testsuite import PlanTestCase
+from plan.testsuite import BaseTestCase
 
 
 class EchoTestRunner(object):
@@ -31,7 +31,7 @@ class EchoTestRunner(object):
         return self.runner.invoke(command, [message])
 
 
-class EchoTestCase(PlanTestCase):
+class EchoTestCase(BaseTestCase):
     
     def setup(self):
         self.runner = EchoTestRunner()

@@ -15,7 +15,7 @@ import unittest
 from plan._compat import PY2, string_types
 
 
-class PlanTestCase(unittest.TestCase):
+class BaseTestCase(unittest.TestCase):
     """Baseclass for all the tests that Plan uses.  We use this
     BaseTestCase for code style consistency.
     """

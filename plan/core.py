@@ -15,6 +15,7 @@ import tempfile
 import subprocess
 
 from .commands import Echo, prompt_choices
+from .job import CommandJob, ScriptJob, ModuleJob
 
 
 class Plan(object):
@@ -36,17 +37,29 @@ class Plan(object):
         # All jobs registered on this Plan object
         self.jobs = []
 
-    def command(self):
+    def inject_kwargs(self, kwargs):
+        if self.environment:
+            kwargs.setdefault('environment', self.environment)
+        if self.output:
+            kwargs.setdefault('output', self.output)
+
+    def command(self, *args, **kwargs):
         """Register one command."""
-        pass
+        self.inject_kwargs(kwargs)
+        job = CommandJob(*args, **kwargs)
+        self.job(job)
 
-    def script(self):
+    def script(self, *args, **kwargs):
         """Register one script."""
-        pass
+        self.inject_kwargs(kwargs)
+        job = ScriptJob(*args, **kwargs)
+        self.job(job)
 
-    def module(self):
+    def module(self, *args, **kwargs):
         """Register one module."""
-        pass
+        self.inject_kwargs(kwargs)
+        job = ModuleJob(*args, **kwargs)
+        self.job(job)
 
     def job(self, job):
         """Register one job.
@@ -77,7 +90,7 @@ class Plan(object):
     def cron_content(self):
         """Your schedule jobs converted to cron syntax."""
         return "\n".join([self.comment_begin] + self.crons +
-                                                    [self.comment_end])
+                                                [self.comment_end]) + "\n"
 
     def _write_to_crontab(self, action, content):
         """The inside method used to modify the current crontab cronfile.
