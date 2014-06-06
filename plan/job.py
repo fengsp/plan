@@ -270,6 +270,7 @@ class Job(object):
 
         # comma seperate same at_type moments
         for at_type, moments in at_map.iteritems():
+            moments = map(str, moments)
             pairs[at_type] = ','.join(moments)
 
         return pairs

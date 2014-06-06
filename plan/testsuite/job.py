@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import sys
 import unittest
 
 from plan.testsuite import PlanTestCase
@@ -129,19 +130,30 @@ class JobTestCase(PlanTestCase):
         self.assert_raises(ParseError, lambda : job.cron)
 
     def test_minute_at(self):
-        pass
+        job = CommandJob('task', every='1.hour', at='minute.5')
+        self.assert_equal(job.cron, '5 * * * * task')
+        job = CommandJob('task', every='1.day', at='minute.1')
+        self.assert_equal(job.cron, '1 0 * * * task')
+        job = CommandJob('task', every='1.month', at='minute.59')
+        self.assert_equal(job.cron, '59 0 1 * * task')
+        job = CommandJob('task', every='monday', at='minute.30')
+        self.assert_equal(job.cron, '30 0 * * 1 task')
 
     def test_hour_at(self):
-        pass
+        job = CommandJob('task', every='1.day', at='hour.1')
+        self.assert_equal(job.cron, '0 1 * * * task')
+        job = CommandJob('task', every='1.month', at='hour.0')
+        self.assert_equal(job.cron, '0 0 1 * * task')
+        job = CommandJob('task', every='monday', at='hour.23')
+        self.assert_equal(job.cron, '0 23 * * 1 task')
 
     def test_day_at(self):
-        pass
-
-    def test_month_at(self):
-        pass
+        job = CommandJob('task', every='1.month', at='day.5')
+        self.assert_equal(job.cron, '0 0 5 * * task')
 
     def test_week_at(self):
-        pass
+        job = CommandJob('task', every='1.month', at='sunday')
+        self.assert_equal(job.cron, '0 0 1 * 0 task') 
 
     def test_at_parse_error(self):
         job = CommandJob('task', every='jan', at='minute.60')
@@ -160,16 +172,61 @@ class JobTestCase(PlanTestCase):
         self.assert_raises(ParseError, lambda : job.cron)
 
     def test_every_at_validation_error(self):
-        pass
+        job = CommandJob('task', every='1.minute', at='minute.1')
+        self.assert_raises(ValidationError, lambda : job.cron)
+        job = CommandJob('task', every='1.minute', at='hour.23')
+        self.assert_raises(ValidationError, lambda : job.cron)
+        job = CommandJob('task', every='1.minute', at='day.1')
+        self.assert_raises(ValidationError, lambda : job.cron)
+        job = CommandJob('task', every='1.minute', at='sunday')
+        self.assert_raises(ValidationError, lambda : job.cron)
+        job = CommandJob('task', every='1.hour', at='hour.23')
+        self.assert_raises(ValidationError, lambda : job.cron)
+        job = CommandJob('task', every='1.hour', at='day.1')
+        self.assert_raises(ValidationError, lambda : job.cron)
+        job = CommandJob('task', every='1.hour', at='sunday')
+        self.assert_raises(ValidationError, lambda : job.cron)
+        job = CommandJob('task', every='1.day', at='day.1')
+        self.assert_raises(ValidationError, lambda : job.cron)
+        job = CommandJob('task', every='1.day', at='sunday')
+        self.assert_raises(ValidationError, lambda : job.cron)
+        job = CommandJob('task', every='sunday', at='day.1')
+        self.assert_raises(ValidationError, lambda : job.cron)
+        job = CommandJob('task', every='sunday', at='sunday')
+        self.assert_raises(ValidationError, lambda : job.cron)
 
     def test_path(self):
-        pass
+        job = ScriptJob('script.py', every='1.day', path='/web/scripts')
+        self.assert_equal(job.cron, '0 0 * * * cd /web/scripts && %s script.py'
+                                    % sys.executable)
 
     def test_environment(self):
-        pass
+        job = ScriptJob('script.py', every='1.day', path='/web/scripts',
+                                            environment={'k': 'v'})
+        self.assert_equal(job.cron, '0 0 * * * cd /web/scripts && k=v %s'
+                                    ' script.py' % sys.executable)
 
     def test_output(self):
-        pass
+        job = ScriptJob('script.py', every='1.day', path='/web/scripts',
+                    output=dict(stdout='/log/out.log', stderr='/log/err.log'))
+        self.assert_equal(job.cron, '0 0 * * * cd /web/scripts && %s script.py'
+                        ' >> /log/out.log 2>> /log/err.log' % sys.executable)
+
+    def test_command_job(self):
+        job = CommandJob('command', every='1.day', output='null')
+        self.assert_equal(job.cron, '0 0 * * * command > /dev/null 2>&1')
+
+    def test_script_job(self):
+        job = ScriptJob('script.py', every='1.day', path='/tmp',
+                    environment={'key': 'value'}, output='null')
+        self.assert_equal(job.cron, '0 0 * * * cd /tmp && key=value %s'
+                            ' script.py > /dev/null 2>&1' % sys.executable)
+
+    def test_module_job(self):
+        job = ModuleJob('calendar', every='1.day', 
+                    environment={'key': 'value'}, output='null')
+        self.assert_equal(job.cron, '0 0 * * * key=value %s -m calendar'
+                                    ' > /dev/null 2>&1' % sys.executable)
 
 
 def suite():
