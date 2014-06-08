@@ -94,12 +94,15 @@ class Job(object):
     :param output: the output redirection for the task.
     """
 
-    def __init__(self, task, every, at=None, path=os.getcwd(), 
+    def __init__(self, task, every, at=None, path=None, 
                                              environment=None, output=None):
         self.task = task
         self.every = every
         self.at = at
-        self.path = path
+        if path is None:
+            self.path = os.getcwd()
+        else:
+            self.path = path
         self.environment = environment
         self.output = str(Output(output))
 
@@ -119,7 +122,7 @@ class Job(object):
         return "{task}"
 
     def task_template(self):
-        """The task template.  You should implement this in your subclass.
+        """The task template.  You should implement this in your own job type.
         """
         raise NotImplementedError()
 
@@ -158,7 +161,7 @@ class Job(object):
         
                           jan feb mar apr may jun jul aug sep oct nov dec
                           and all of those full month names(case insenstive)
-                          <int:n>.month
+                          or <int:n>.month
         """
         if '.' in month:
             frequency = get_frequency(month)

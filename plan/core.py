@@ -64,7 +64,7 @@ class Plan(object):
     def job(self, job):
         """Register one job.
         
-        :param job: one :class:`Plan.Job` instance.
+        :param job: one :class:`~plan.Job` instance.
         """
         self.jobs.append(job)
 

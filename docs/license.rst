@@ -6,7 +6,7 @@ License
 Plan is licensed under BSD License.
 
 
-AUTHORS
+Authors
 -------
 
 .. include:: ../AUTHORS

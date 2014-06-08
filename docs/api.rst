@@ -24,10 +24,6 @@ Job Objects
 .. autoclass:: CommandJob
    :members:
 
-   .. attribute:: cron
-
-       The cron syntax content of this job object.
-
 .. autoclass:: ScriptJob
    :members:
 
