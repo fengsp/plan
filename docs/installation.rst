@@ -39,7 +39,7 @@ for example::
 
 Now if you want to activate the corresponding environment, just do::
     
-    $ . vent/bin/activate
+    $ . venv/bin/activate
 
 
 Install Plan
@@ -65,7 +65,7 @@ Get the source code from github and run it in development mode::
     $ virtualenv venv
     New python executable in venv/bin/python
     Installing setuptools, pip...done.
-    $ . vent/bin/activate
+    $ . venv/bin/activate
     $ python setup.py develop
     ...
     Finished processing dependencies for Plan
