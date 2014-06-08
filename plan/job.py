@@ -84,11 +84,11 @@ def get_frequency(every):
 
 class Job(object):
     """The plan job base class.
-
+    
     :param task: this is what the job does.
     :param every: how often does the job run.
     :param at: when does the job run.
-    :param path: the path you want to run the task on,
+    :param path: the path you want to run the task on, 
                  default to be current working directory.
     :param environment: the environment you want to run the task under.
     :param output: the output redirection for the task.
@@ -278,20 +278,25 @@ class Job(object):
     def validate_time(self):
         """Validate every and at value.
 
-        every: can be [1-60].minute [1-24].hour [1-31].day 
-                      [1-12].month [1].year
-                      jan feb mar apr may jun jul aug sep oct nov dec
-                      sun mon tue wed thu fri sat weekday weekend
-                      or any fullname of month names and day of week names
-                      (case insensitive)
-        at: when every is minute, can not be set
+        every can be:: 
+            
+            [1-60].minute [1-24].hour [1-31].day 
+            [1-12].month [1].year
+            jan feb mar apr may jun jul aug sep oct nov dec
+            sun mon tue wed thu fri sat weekday weekend
+            or any fullname of month names and day of week names
+            (case insensitive)
+
+        at::
+            
+            when every is minute, can not be set
             when every is hour, can be minute.[0-59]
             when every is day of month, can be minute.[0-59], hour.[0-23]
             when every is month, can be day.[1-31], day of week, 
                                  minute.[0-59], hour.[0-23]
             when every is day of week, can be minute.[0-59], hour.[0-23]
 
-            at can be multiple at values seperated by one space.
+            at can also be multiple at values seperated by one space.
         """
         every_type, every = self.parse_every(), self.every
         ats = self.parse_at()
