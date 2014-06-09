@@ -14,7 +14,7 @@ import sys
 import tempfile
 import subprocess
 
-from .commands import Echo, prompt_choices
+from .commands import Echo
 from .job import CommandJob, ScriptJob, ModuleJob
 
 
@@ -189,9 +189,12 @@ class Plan(object):
         # Write the updated cronfile back to crontab
         self._write_to_crontab(action, updated_content)
 
-    def run(self):
-        """Use this to do any action on this Plan object."""
-        run_type = prompt_choices("Run", ["check", "write", "update", "clear"])
+    def run(self, run_type="check"):
+        """Use this to do any action on this Plan object.
+        
+        :param run_type: The running type, one of ("check", "write", 
+                         "update", "clear"), default to be "check"
+        """
         if run_type == "update" or run_type == "clear":
             self.update_crontab(run_type)
         elif run_type == "write":
@@ -200,6 +203,6 @@ class Plan(object):
             Echo.echo(self.cron_content)
             Echo.message("Your crontab file was not updated.")
 
-    def __call__(self):
+    def __call__(self, run_type="check"):
         """Shortcut for :method:`run`."""
-        self.run()
+        self.run(run_type)

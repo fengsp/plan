@@ -27,8 +27,8 @@ Just save it as `schedule.py` (or whatever you want) and run it with your
 Python interpreter.  Make sure to not name it `plan.py` becaure it would
 conflict with Plan itself.
 
-Now If you just select the default run_type check, you should see your
-cron syntax jobs in the output of terminal::
+Now we do not run with one explicit run_type, default run_type check will be
+used, you should see your cron syntax jobs in the output of terminal::
     
     # Begin Plan generated jobs for: main
     0 0 * * * ls /tmp

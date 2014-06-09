@@ -17,7 +17,15 @@ from plan.core import Plan
 
 
 class PlanTestCase(BaseTestCase):
-    
+ 
+    def test_empty_cron_content(self):
+        plan = Plan()
+        desired_cron_content = """\
+# Begin Plan generated jobs for: main
+# End Plan generated jobs for: main
+"""
+        self.assert_equal(plan.cron_content, desired_cron_content)
+
     def test_cron_content(self):
         plan = Plan()
         plan.command('command', every='1.day')

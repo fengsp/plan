@@ -36,7 +36,28 @@ Let's get our basic schedule file::
 Now you can see a `schedule.py` under your schedule directory,
 ``plan-quickstart`` is the command that comes with Plan for creating one
 example file, you can run ``plan-quickstart --help`` for more details.  Then
-you can modify this file for your own needs.
+you can modify this file for your own needs, the file looks like this::
+    
+    # -*- coding: utf-8 -*-
+
+    # Use this file to easily define all of your cron jobs.
+    #
+    # It's helpful to understand cron before proceeding.
+    # http://en.wikipedia.org/wiki/Cron
+    #
+    # Learn more: http://github.com/fengsp/plan
+
+    from plan import Plan
+
+    cron = Plan()
+
+    # cron.command('top', every='4.hour', output=
+            dict(stdout='/tmp/top_stdout.log', stderr='/tmp/top_stderr.log'))
+    # cron.script('script.py', every='1.day', path='/web/yourproject/scripts',
+                             environment={'YOURAPP_ENV': 'production'})
+
+    if __name__ == "__main__":
+        cron.run()
 
 
 One Command
@@ -54,8 +75,9 @@ following cron syntax content::
     0 0,4,8,12,16,20 * * * top >> /tmp/top_stdout.log 2>> /tmp/top_stderr.log
     # End Plan generated jobs for: main
 
-When you call :meth:`~plan.Plan.run`, you will be prompted for which run-type
-you want to use, for more details on run types, check :ref:`run_types` out.
+When you call :meth:`~plan.Plan.run`, you can choose which run-type(default 
+to be check) you want to use, for more details on run types, check 
+:ref:`run_types` out.
 
 
 Scripts
