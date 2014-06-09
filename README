@@ -1,0 +1,21 @@
+Plan
+
+    Plan is a Python package for writing and deploying cron jobs.  Plan will 
+    convert Python code to cron syntax.  You can easily manage your cron jobs
+    with Plan like a charm.  It is designed for elegancy and writing cron jobs
+    with as little amount of code as possible.  It's extensible but comes with
+    serveral good useful job types out of the box.
+
+    The purpose is making writing cronfile fun and without causing mistakes.
+
+    Plan has following goods:
+
+    -   one command to create a quickstart example schedule.py file
+    -   easy to define your task, every frequency, at moment, running path,
+        running bash environment, task output
+    -   handle communicate with your crontab process with features like write,
+        update or clear
+    
+    Read the docs at http://doc.url/
+
+    If you feel anything wrong, feedbacks or pull requests are welcomed.
