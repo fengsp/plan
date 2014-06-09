@@ -34,9 +34,10 @@ class PlanTestCase(BaseTestCase):
         self.assert_equal(plan.cron_content, desired_cron_content)
 
     def test_inject_kwargs(self):
-        plan = Plan('test', environment={'testkey': 'testvalue'},
-                     output=dict(stdout='/tmp/out.log'))
-        plan.script('script.py', every='1.day', path='/web/scripts')
+        plan = Plan('test', path='/web/scripts', 
+                            environment={'testkey': 'testvalue'},
+                            output=dict(stdout='/tmp/out.log'))
+        plan.script('script.py', every='1.day')
         desired_cron_content = """\
 # Begin Plan generated jobs for: test
 0 0 * * * cd /web/scripts && testkey=testvalue %s script.py >> /tmp/out.log 2>> /dev/null

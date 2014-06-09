@@ -23,13 +23,16 @@ class Plan(object):
     manage a group of jobs.
 
     :param name: the unique identity for this plan object, default to be main
+    :param path: the global path you want to run the task on.
     :param environment: the global crontab job bash environment.
     :param output: the global crontab job output logfile for this object.
     :param user: the user you want to run `crontab` command with.
     """
     
-    def __init__(self, name="main", environment=None, output=None, user=None):
+    def __init__(self, name="main", path=None, environment=None,
+                                                output=None, user=None):
         self.name = name
+        self.path = path
         self.environment = environment
         self.output = output
         self.user = user
@@ -38,6 +41,8 @@ class Plan(object):
         self.jobs = []
 
     def inject_kwargs(self, kwargs):
+        if self.path:
+            kwargs.setdefault('path', self.path)
         if self.environment:
             kwargs.setdefault('environment', self.environment)
         if self.output:
