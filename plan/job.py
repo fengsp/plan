@@ -74,12 +74,23 @@ def is_week(time):
 def get_frequency(every):
     """Get frequency value from one every type value:
 
-    >>> get_frequency('3.days')
+    >>> get_frequency('3.day')
     3
 
     :param every: One every type value.
     """
     return int(every[:every.find('.')])
+
+
+def get_moment(at):
+    """Get moment value from one at type value:
+
+    >>> get_moment('minute.1')
+    1
+
+    :param at: One at type value.
+    """
+    return int(at[at.find('.') + 1:])
 
 
 class Job(object):
@@ -230,6 +241,27 @@ class Job(object):
             raise ParseError("Your every value %s is invalid" % every)
         
         return every_type
+
+    def preprocess_at(self, at):
+        """Do preprocess for at value, just modify "12:12" style moment into
+           "hour.12 minute.12" style moment value.
+        
+        :param at: The at value you want to do preprocess.
+        """
+        ats = at.split(' ')
+        processed_ats = []
+        for at in ats:
+            if ':' in at:
+                hour, minute = at.split(':')[:2]
+                if minute.startswith('0') and len(minute) >= 2:
+                    minute = minute[1]
+                hour = 'hour.' + hour
+                minute = 'minute.' + minute
+                processed_ats.append(hour)
+                processed_ats.append(minute)
+            else:
+                processed_ats.append(at)
+        return ' '.join(processed_ats)
     
     def parse_at(self):
         """Parse at value into (at_type, moment) pairs.
@@ -238,8 +270,8 @@ class Job(object):
         if not self.at:
             return pairs
 
-        get_moment = lambda at: int(at[at.find('.') + 1:])
-        ats = self.at.split(' ')
+        processed_at = self.preprocess_at(self.at)
+        ats = processed_at.split(' ')
         at_map = collections.defaultdict(list)
         
         # Parse at value into (at_type, moments_list) pairs.
@@ -250,26 +282,27 @@ class Job(object):
                 at_type, moment = MINUTE, get_moment(at)
                 if not moment in range(60):
                     raise ParseError("Your at value %s is invalid"
-                                     " out of minute range[0-59]" % at)
+                                     " out of minute range[0-59]" % self.at)
             elif 'hour.' in at:
                 at_type, moment = HOUR, get_moment(at)
                 if not moment in range(24):
                     raise ParseError("Your at value %s is invalid"
-                                     " out of hour range[0-23]" % at)
+                                     " out of hour range[0-23]" % self.at)
             elif 'day.' in at:
                 at_type, moment = DAY, get_moment(at)
                 if not moment in range(1, 32):
                     raise ParseError("Your at value %s is invalid"
-                                     " out of month day range[1-31]" % at)
+                                     " out of month day range[1-31]" % self.at)
             elif 'month.' in at or 'year.' in at:
                 raise ParseError("Your at value %s is invalid"
-                                 " can not set month or year" % at)
+                                 " can not set month or year" % self.at)
             elif is_week(at):
                 at_type = WEEK
                 moment = self.parse_week(at)
             else:
-                raise ParseError("Your at value %s is invalid" % at)
-            at_map[at_type].append(moment)
+                raise ParseError("Your at value %s is invalid" % self.at)
+            if not moment in at_map[at_type]:
+                at_map[at_type].append(moment)
 
         # comma seperate same at_type moments
         for at_type, moments in at_map.iteritems():

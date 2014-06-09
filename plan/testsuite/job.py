@@ -13,8 +13,8 @@ import sys
 import unittest
 
 from plan.testsuite import BaseTestCase
-from plan.job import is_month, is_week, get_frequency
-from plan.job import CommandJob, ScriptJob, ModuleJob
+from plan.job import is_month, is_week, get_frequency, get_moment
+from plan.job import Job, CommandJob, ScriptJob, ModuleJob
 from plan.exceptions import ParseError, ValidationError
 
 
@@ -37,8 +37,12 @@ class BasicTestCase(BaseTestCase):
         self.assert_false(is_week('feburary'))
 
     def test_get_frequency(self):
-        self.assert_equal(3, get_frequency('3.years'))
+        self.assert_equal(3, get_frequency('3.month'))
         self.assert_equal(3, get_frequency('3.'))
+    
+    def test_get_moment(self):
+        self.assert_equal(3, get_moment('day.3'))
+        self.assert_equal(3, get_moment('.3'))
 
 
 class JobTestCase(BaseTestCase):
@@ -129,6 +133,21 @@ class JobTestCase(BaseTestCase):
         job = CommandJob('task', every='2.year')
         self.assert_raises(ParseError, lambda : job.cron)
 
+    def test_preprocess_at(self):
+        job = Job('job', every='1.hour')
+        at = job.preprocess_at('0:0')
+        self.assert_equal(at, 'hour.0 minute.0')
+        at = job.preprocess_at('1:00')
+        self.assert_equal(at, 'hour.1 minute.0')
+        at = job.preprocess_at('23:01')
+        self.assert_equal(at, 'hour.23 minute.1')
+        at = job.preprocess_at('23:10')
+        self.assert_equal(at, 'hour.23 minute.10')
+        at = job.preprocess_at('12:59')
+        self.assert_equal(at, 'hour.12 minute.59')
+        at = job.preprocess_at('14:09:0')
+        self.assert_equal(at, 'hour.14 minute.9')
+
     def test_minute_at(self):
         job = CommandJob('task', every='1.hour', at='minute.5')
         self.assert_equal(job.cron, '5 * * * * task')
@@ -153,7 +172,19 @@ class JobTestCase(BaseTestCase):
 
     def test_week_at(self):
         job = CommandJob('task', every='1.month', at='sunday')
-        self.assert_equal(job.cron, '0 0 1 * 0 task') 
+        self.assert_equal(job.cron, '0 0 1 * 0 task')
+    
+    def test_at(self):
+        job = CommandJob('task', every='1.month', at='day.1 hour.1 minute.0')
+        self.assert_equal(job.cron, '0 1 1 * * task')
+        job = CommandJob('task', every='1.month', at='day.1 12:00')
+        self.assert_equal(job.cron, '0 12 1 * * task')
+        job = CommandJob('task', every='1.month', 
+                                    at='day.1 hour.1 minute.5 minute.10')
+        self.assert_equal(job.cron, '5,10 1 1 * * task')
+        job = CommandJob('task', every='1.month',
+                                    at='day.15 10:55 10:56')
+        self.assert_equal(job.cron, '55,56 10 15 * * task')
 
     def test_at_parse_error(self):
         job = CommandJob('task', every='jan', at='minute.60')
