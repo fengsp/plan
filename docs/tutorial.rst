@@ -59,7 +59,7 @@ you want to use, for more details on run types, check :ref:`run_types` out.
 
 
 Scripts
-=======
+-------
 
 I have one script I want to run every day::
     
@@ -72,7 +72,7 @@ And now we have one more cron entry::
 
 
 More Jobs
-=========
+---------
 
 As time going on, I have got much more cron jobs.  For example, I have 10 more
 scripts under `/web/yourproject/scripts` and 10 more commands to run.  Now
