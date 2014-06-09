@@ -8,6 +8,10 @@ that by this tutorial.  In this tutorial I will show you how to use Plan
 to do cron jobs in Python.  After this you should be easily creating your own
 cron jobs and learn the common patterns of Plan.
 
+If you want the full source code, check out `example source`_.
+
+.. _example source: https://github.com/fengsp/plan/tree/master/examples
+
 
 Introducing
 -----------
