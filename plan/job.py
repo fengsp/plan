@@ -135,7 +135,7 @@ class Job(object):
     def task_template(self):
         """The task template.  You should implement this in your own job type.
         """
-        raise NotImplementedError()
+        return 'cd {path} && {environment} {task} {output}'
 
     def process_template(self, template):
         """Process template content.  Drop multiple spaces in a row and strip
@@ -244,7 +244,7 @@ class Job(object):
 
     def preprocess_at(self, at):
         """Do preprocess for at value, just modify "12:12" style moment into
-           "hour.12 minute.12" style moment value.
+        "hour.12 minute.12" style moment value.
         
         :param at: The at value you want to do preprocess.
         """
@@ -442,6 +442,10 @@ class CommandJob(Job):
     """
 
     def task_template(self):
+        """Template::
+            
+            '{task} {output}'
+        """
         return '{task} {output}'
 
 
@@ -450,6 +454,10 @@ class ScriptJob(Job):
     """
 
     def task_template(self):
+        """Template::
+            
+            'cd {path} && {environment} %s {task} {output}' % sys.executable
+        """
         return 'cd {path} && {environment} %s {task} {output}' % sys.executable
 
 
@@ -458,4 +466,8 @@ class ModuleJob(Job):
     """
 
     def task_template(self):
+        """Template::
+           
+            '{environment} %s -m {task} {output}' % sys.executable
+        """
         return '{environment} %s -m {task} {output}' % sys.executable

@@ -53,6 +53,10 @@ class JobTestCase(BaseTestCase):
         job = CommandJob('ls  -l ', every='weekend')
         self.assert_equal(job.cron, '0 0 * * 6,0 ls -l')
 
+    def test_raw_every(self):
+        job = Job('task', every='0 1 2 3 *', at='minute.2', path='/path')
+        self.assert_equal(job.cron, '0 1 2 3 * cd /path && task')
+
     def test_minute_every(self):
         job = CommandJob('task', every='1.minute')
         self.assert_equal(job.cron, '* * * * * task')
