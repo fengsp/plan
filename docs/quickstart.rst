@@ -16,7 +16,7 @@ A simple usage looks like this::
 
     cron = Plan()
 
-    cron.command('ls /tmp', every='1.day')
+    cron.command('ls /tmp', every='1.day', at='12:00')
     cron.command('pwd', every='2.month')
     cron.command('date', every='weekend')
 
@@ -31,7 +31,7 @@ Now we do not run with one explicit run_type, default run_type check will be
 used, you should see your cron syntax jobs in the output of terminal::
     
     # Begin Plan generated jobs for: main
-    0 0 * * * ls /tmp
+    0 12 * * * ls /tmp
     0 0 1 1,3,5,7,9,11 * pwd
     0 0 * * 6,0 date
     # End Plan generated jobs for: main

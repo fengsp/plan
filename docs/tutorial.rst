@@ -115,7 +115,7 @@ Now we modify schedule_commands.py::
 
     cron.command('top', every='4.hour', output=
               dict(stdout='/tmp/top_stdout.log', stderr='/tmp/top_stderr.log'))
-    cron.command('yourcommand', every='sunday')
+    cron.command('yourcommand', every='sunday', at='hour.12 minute.0 minute.30')
     # more commands here
 
     if __name__ == "__main__":
