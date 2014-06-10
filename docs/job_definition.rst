@@ -5,7 +5,8 @@ Job Definition
 
 This part shows you how to define a cron job in Plan.  One job takes following
 parameters ``task``, ``every``, ``at``, ``path``, ``environment`` and 
-``output``, here is one example::
+``output``, you can have a look at :class:`~plan.Job` for more details.
+Here is one example::
     
     from plan import Job
 
