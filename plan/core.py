@@ -16,6 +16,7 @@ import subprocess
 
 from .commands import Echo
 from .job import CommandJob, ScriptJob, ModuleJob, RawJob
+from ._compat import string_types
 
 
 class Plan(object):
@@ -37,6 +38,8 @@ class Plan(object):
         self.output = output
         self.user = user
 
+        # All commands should be executed before run
+        self.bootstrap_commands = []
         # All jobs registered on this Plan object
         self.jobs = []
 
@@ -47,6 +50,16 @@ class Plan(object):
             kwargs.setdefault('environment', self.environment)
         if self.output:
             kwargs.setdefault('output', self.output)
+
+    def bootstrap(self, command_or_commands):
+        """Register bootstrap commands.
+
+        :param command_or_commands: One command or a list of commands.
+        """
+        if isinstance(command_or_commands, string_types):
+            self.bootstrap_commands.append(command_or_commands)
+        elif isinstance(command_or_commands, list):
+            self.bootstrap_commands.extend(command_or_commands)
 
     def command(self, *args, **kwargs):
         """Register one command."""
@@ -195,12 +208,23 @@ class Plan(object):
         # Write the updated cronfile back to crontab
         self._write_to_crontab(action, updated_content)
 
+    def run_bootstrap_commands(self):
+        """Run bootstrap commands.
+        """
+        Echo.echo("Starting bootstrap...")
+        for command in self.bootstrap_commands:
+            command = re.sub(r'\s+', r' ', command)
+            command = command.split(' ')
+            subprocess.Popen(command).wait()
+        Echo.echo("Bootstrap finished!\n\n")
+
     def run(self, run_type="check"):
         """Use this to do any action on this Plan object.
         
         :param run_type: The running type, one of ("check", "write", 
                          "update", "clear"), default to be "check"
         """
+        self.run_bootstrap_commands()
         if run_type == "update" or run_type == "clear":
             self.update_crontab(run_type)
         elif run_type == "write":

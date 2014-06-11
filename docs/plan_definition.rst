@@ -25,6 +25,23 @@ If you want to run `crontab` command with a certain user, remember to set
 this parameter.
 
 
+Bootstrap
+---------
+
+Maybe you want to do some bootstrap work before you run your plan object,
+like you used one third party library in your Python script, you need to
+install it before running.  You can do that as simple like this::
+    
+    cron = Plan()
+    cron.bootstrap('pip install requests')
+    cron.bootstrap(['pip install Sphinx', 'sphinx-quickstart'])
+    cron.script('crawl.py', every='1.day', path='/tmp')
+    cron.run('check')
+
+Bootstrap takes one command or a list of commands, for more details check out
+:meth:`~plan.Plan.bootstrap`.
+
+
 Patterns
 --------
 
