@@ -1,1 +1,1 @@
-include LICENSE CHANGES *.py
+include LICENSE AUTHORS CHANGES *.py

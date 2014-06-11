@@ -218,12 +218,13 @@ class Plan(object):
     def run_bootstrap_commands(self):
         """Run bootstrap commands.
         """
-        Echo.echo("Starting bootstrap...")
-        for command in self.bootstrap_commands:
-            command = re.sub(r'\s+', r' ', command)
-            command = command.split(' ')
-            subprocess.Popen(command).wait()
-        Echo.echo("Bootstrap finished!\n\n")
+        if self.bootstrap_commands:
+            Echo.echo("Starting bootstrap...")
+            for command in self.bootstrap_commands:
+                command = re.sub(r'\s+', r' ', command)
+                command = command.split(' ')
+                subprocess.Popen(command).wait()
+            Echo.echo("Bootstrap finished!\n\n")
 
     def run(self, run_type="check"):
         """Use this to do any action on this Plan object.
