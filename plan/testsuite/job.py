@@ -14,7 +14,7 @@ import unittest
 
 from plan.testsuite import BaseTestCase
 from plan.job import is_month, is_week, get_frequency, get_moment
-from plan.job import Job, CommandJob, ScriptJob, ModuleJob
+from plan.job import Job, CommandJob, ScriptJob, ModuleJob, RawJob
 from plan.exceptions import ParseError, ValidationError
 
 
@@ -262,6 +262,10 @@ class JobTestCase(BaseTestCase):
                     environment={'key': 'value'}, output='null')
         self.assert_equal(job.cron, '0 0 * * * key=value %s -m calendar'
                                     ' > /dev/null 2>&1' % sys.executable)
+    
+    def test_raw_job(self):
+        job = RawJob('raw ????  my job', every='1.day')
+        self.assert_equal(job.cron, '0 0 * * * raw ???? my job')
 
 
 def suite():

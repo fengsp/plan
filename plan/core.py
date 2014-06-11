@@ -15,7 +15,7 @@ import tempfile
 import subprocess
 
 from .commands import Echo
-from .job import CommandJob, ScriptJob, ModuleJob
+from .job import CommandJob, ScriptJob, ModuleJob, RawJob
 
 
 class Plan(object):
@@ -64,6 +64,12 @@ class Plan(object):
         """Register one module."""
         self.inject_kwargs(kwargs)
         job = ModuleJob(*args, **kwargs)
+        self.job(job)
+    
+    def raw(self, *args, **kwargs):
+        """Register one raw job."""
+        self.inject_kwargs(kwargs)
+        job = RawJob(*args, **kwargs)
         self.job(job)
 
     def job(self, job):

@@ -29,3 +29,6 @@ Job Objects
 
 .. autoclass:: ModuleJob
    :members:
+
+.. autoclass:: RawJob
+   :members:

@@ -10,4 +10,4 @@
 """
 
 from .core import Plan
-from .job import Job, CommandJob, ScriptJob, ModuleJob
+from .job import Job, CommandJob, ScriptJob, ModuleJob, RawJob

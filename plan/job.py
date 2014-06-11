@@ -134,6 +134,9 @@ class Job(object):
 
     def task_template(self):
         """The task template.  You should implement this in your own job type.
+        The default template is::
+            
+            'cd {path} && {environment} {task} {output}'
         """
         return 'cd {path} && {environment} {task} {output}'
 
@@ -471,3 +474,15 @@ class ModuleJob(Job):
             '{environment} %s -m {task} {output}' % sys.executable
         """
         return '{environment} %s -m {task} {output}' % sys.executable
+
+
+class RawJob(Job):
+    """The raw job.
+    """
+
+    def task_template(self):
+        """Template::
+        
+            '{task}'
+        """
+        return '{task}'
