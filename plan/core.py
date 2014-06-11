@@ -126,9 +126,13 @@ class Plan(object):
         """
         # make sure at most 3 '\n' in a row
         content = re.sub(r'\n{4,}', r'\n\n\n', content)
-
+        # strip
+        content = content.strip()
+        content += "\n"
+        
         tmp_cronfile = tempfile.NamedTemporaryFile()
         tmp_cronfile.write(content)
+        tmp_cronfile.flush()
         
         # command used to write crontab
         # $ crontab -u username cronfile
@@ -138,7 +142,7 @@ class Plan(object):
         command.append(tmp_cronfile.name)
         
         try:
-            subprocess.call(command)
+            subprocess.Popen(command).wait()
         except:
             Echo.fail("couldn't write crontab; try running check to "
                       "ensure your cronfile is valid.")
@@ -183,9 +187,9 @@ class Plan(object):
             crontab_content = ''
 
         # Check for unbegined or unended block
-        comment_begin_re = re.compile(r"^%s\s*$" % self.comment_begin)
-        comment_end_re = re.compile(r"^%s\s*$" % self.comment_end)
-        cron_block_re = re.compile(r"^%s\s*$.+^%s\s*$" % 
+        comment_begin_re = re.compile(r"^%s$" % self.comment_begin, re.M)
+        comment_end_re = re.compile(r"^%s$" % self.comment_end, re.M)
+        cron_block_re = re.compile(r"^%s$.+^%s$" % 
                        (self.comment_begin, self.comment_end), re.M|re.S)
                        
         comment_begin_match = comment_begin_re.search(current_crontab)
@@ -206,7 +210,7 @@ class Plan(object):
             updated_content = cron_block_re.sub(crontab_content, 
                                                         current_crontab)
         else:
-            updated_content = "\n\n".join(current_crontab, crontab_content)
+            updated_content = "\n\n".join((current_crontab, crontab_content))
 
         # Write the updated cronfile back to crontab
         self._write_to_crontab(action, updated_content)
