@@ -124,6 +124,9 @@ class Plan(object):
                        cleared.
         :param content: the content that is written to the crontab cronfile.
         """
+        # make sure at most 3 '\n' in a row
+        content = re.sub(r'\n{4,}', r'\n\n\n', content)
+
         tmp_cronfile = tempfile.NamedTemporaryFile()
         tmp_cronfile.write(content)
         
