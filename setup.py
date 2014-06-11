@@ -7,7 +7,6 @@ Cron jobs in Python.
 Links
 `````
 
-* `documentation <https://github.com/fengsp/plan>`_
 * `development version
   <http://github.com/fengsp/plan/zipball/master#egg=plan-dev>`_
 
