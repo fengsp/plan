@@ -140,6 +140,7 @@ schedule files, it is simple, do not use ``write`` run-type, on the other
 hand, ``update`` run-type is what you should use here.  ``write`` run-type
 will replace the whole crontab cronfile content with that Plan object's
 cron content, ``update`` will just add or update the corresponding block
-distinguished by your Plan object name(here is commands and scripts).
+distinguished by your Plan object name(here is ``"commands"`` and
+``"scripts"``).
 
 If you are still interested, now it is your time to move on to the next part.
