@@ -57,6 +57,20 @@ class JobTestCase(BaseTestCase):
         job = Job('task', every='0 1 2 3 *', at='minute.2', path='/path')
         self.assert_equal(job.cron, '0 1 2 3 * cd /path && task')
 
+    def test_predefined_every(self):
+        job = Job('task', every='yearly', at='minute.2', path='/path')
+        self.assert_equal(job.cron, '@yearly cd /path && task')
+        job = Job('task', every='monthly', at='minute.2', path='/path')
+        self.assert_equal(job.cron, '@monthly cd /path && task')
+        job = Job('task', every='weekly', at='minute.2', path='/path')
+        self.assert_equal(job.cron, '@weekly cd /path && task')
+        job = Job('task', every='daily', at='minute.2', path='/path')
+        self.assert_equal(job.cron, '@daily cd /path && task')
+        job = Job('task', every='hourly', at='minute.2', path='/path')
+        self.assert_equal(job.cron, '@hourly cd /path && task')
+        job = Job('task', every='reboot', at='minute.2', path='/path')
+        self.assert_equal(job.cron, '@reboot cd /path && task')
+
     def test_minute_every(self):
         job = CommandJob('task', every='1.minute')
         self.assert_equal(job.cron, '* * * * * task')
