@@ -7,7 +7,7 @@ There are several mode Plan can run on, you shoud pass the run_type parameter
 when you run your plan object, check out :meth:`~plan.Plan.run`, for example::
     
     cron = Plan()
-    cron.run('check')
+    cron.run('check') # could be 'check', 'write', 'update', 'clear'
 
 
 Check
