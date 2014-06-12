@@ -38,6 +38,17 @@ do something like this::
     
     job = Job('demo', every='1,2 5,6 * * 3,4')
 
+Also, every can be special predefined values, and in this case, your at value
+will be ignored too, they are::
+    
+    "yearly"    # Run once a year at midnight on the morning of January 1
+    "monthly"   # Run once a month at midnight on the morning of the first day 
+                # of the month
+    "weekly"    # Run once a week at midnight on Sunday morning
+    "daily"     # Run once a day at midnight
+    "hourly"    # Run once an hour at the beginning of the hour
+    "reboot"    # Run at startup
+
 
 At
 --
