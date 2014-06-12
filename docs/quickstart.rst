@@ -24,7 +24,7 @@ A simple usage looks like this::
         cron.run()
 
 Just save it as `schedule.py` (or whatever you want) and run it with your
-Python interpreter.  Make sure to not name it `plan.py` becaure it would
+Python interpreter.  Make sure to not name it `plan.py` because it would
 conflict with Plan itself.
 
 Now we do not run with one explicit run_type, default run_type check will be
