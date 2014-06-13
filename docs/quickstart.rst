@@ -28,7 +28,9 @@ Python interpreter.  Make sure to not name it `plan.py` because it would
 conflict with Plan itself.
 
 Now we do not run with one explicit run_type, default run_type check will be
-used, you should see your cron syntax jobs in the output of terminal::
+used, or you can just get your cron syntax content by access
+:attr:`~plan.Plan.cron_content`, you should see your cron syntax jobs in the
+output of terminal::
     
     # Begin Plan generated jobs for: main
     0 12 * * * ls /tmp
