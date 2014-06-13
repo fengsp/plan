@@ -29,11 +29,11 @@ MONTH_MAP = {
     "jan": "1",
     "feb": "2",
     "mar": "3",
-    "apr": "4", 
+    "apr": "4",
     "may": "5",
     "jun": "6",
     "jul": "7",
-    "aug": "8", 
+    "aug": "8",
     "sep": "9",
     "oct": "10",
     "nov": "11",
@@ -56,7 +56,7 @@ PREDEFINED_DEFINITIONS = {"yearly", "annually", "monthly", "weekly",
 
 def is_month(time):
     """Tell whether time is one of the month names.
-    
+
     :param time: a string of time.
     """
     return time[:3].lower() in MONTH_MAP
@@ -64,7 +64,7 @@ def is_month(time):
 
 def is_week(time):
     """Tell whether time is one of the days of week.
-    
+
     :param time: a string of time.
     """
     return time[:3].lower() in WEEK_MAP or \
@@ -95,17 +95,17 @@ def get_moment(at):
 
 class Job(object):
     """The plan job base class.
-    
+
     :param task: this is what the job does.
     :param every: how often does the job run.
     :param at: when does the job run.
-    :param path: the path you want to run the task on, 
+    :param path: the path you want to run the task on,
                  default to be current working directory.
     :param environment: the environment you want to run the task under.
     :param output: the output redirection for the task.
     """
 
-    def __init__(self, task, every, at=None, path=None, 
+    def __init__(self, task, every, at=None, path=None,
                                              environment=None, output=None):
         self.task = task
         self.every = every
@@ -135,7 +135,7 @@ class Job(object):
     def task_template(self):
         """The task template.  You should implement this in your own job type.
         The default template is::
-            
+
             'cd {path} && {environment} {task} {output}'
         """
         return 'cd {path} && {environment} {task} {output}'
@@ -172,7 +172,7 @@ class Job(object):
         every value.
 
         :param month: this parameter can be the following values:
-        
+
                           jan feb mar apr may jun jul aug sep oct nov dec
                           and all of those full month names(case insenstive)
                           or <int:n>.month
@@ -188,9 +188,9 @@ class Job(object):
         """Parses day of week name into week numbers.
 
         :param week: this parameter can be the following values:
-                     
+
                          sun mon tue wed thu fri sat
-                         sunday monday tuesday wednesday thursday friday 
+                         sunday monday tuesday wednesday thursday friday
                          saturday
                          weekday weedend(case insenstive)
         """
@@ -204,7 +204,7 @@ class Job(object):
 
     def parse_every(self):
         """Parse every value.
-        
+
         :return: every_type.
         """
         every = self.every
@@ -242,13 +242,13 @@ class Job(object):
             every_type = WEEK
         else:
             raise ParseError("Your every value %s is invalid" % every)
-        
+
         return every_type
 
     def preprocess_at(self, at):
         """Do preprocess for at value, just modify "12:12" style moment into
         "hour.12 minute.12" style moment value.
-        
+
         :param at: The at value you want to do preprocess.
         """
         ats = at.split(' ')
@@ -265,7 +265,7 @@ class Job(object):
             else:
                 processed_ats.append(at)
         return ' '.join(processed_ats)
-    
+
     def parse_at(self):
         """Parse at value into (at_type, moment) pairs.
         """
@@ -276,7 +276,7 @@ class Job(object):
         processed_at = self.preprocess_at(self.at)
         ats = processed_at.split(' ')
         at_map = collections.defaultdict(list)
-        
+
         # Parse at value into (at_type, moments_list) pairs.
         # One same at_type can have multiple moments like:
         # at = "minute.5 minute.10 hour.2"
@@ -313,13 +313,13 @@ class Job(object):
             pairs[at_type] = ','.join(moments)
 
         return pairs
-    
+
     def validate_time(self):
         """Validate every and at value.
 
         every can be:: 
-            
-            [1-60].minute [1-24].hour [1-31].day 
+
+            [1-60].minute [1-24].hour [1-31].day
             [1-12].month [1].year
             jan feb mar apr may jun jul aug sep oct nov dec
             sun mon tue wed thu fri sat weekday weekend
@@ -327,11 +327,11 @@ class Job(object):
             (case insensitive)
 
         at::
-            
+
             when every is minute, can not be set
             when every is hour, can be minute.[0-59]
             when every is day of month, can be minute.[0-59], hour.[0-23]
-            when every is month, can be day.[1-31], day of week, 
+            when every is month, can be day.[1-31], day of week,
                                  minute.[0-59], hour.[0-23]
             when every is day of week, can be minute.[0-59], hour.[0-23]
 
@@ -382,7 +382,7 @@ class Job(object):
         """
         every_type, every, ats = self.validate_time()
         time = ['*'] * 5
-        
+
         if every_type == MINUTE:
             frequency = get_frequency(every)
             time[0] = self.produce_frequency_time(frequency, 59)
@@ -446,7 +446,7 @@ class CommandJob(Job):
 
     def task_template(self):
         """Template::
-            
+
             '{task} {output}'
         """
         return '{task} {output}'
@@ -458,7 +458,7 @@ class ScriptJob(Job):
 
     def task_template(self):
         """Template::
-            
+
             'cd {path} && {environment} %s {task} {output}' % sys.executable
         """
         return 'cd {path} && {environment} %s {task} {output}' % sys.executable
@@ -470,7 +470,7 @@ class ModuleJob(Job):
 
     def task_template(self):
         """Template::
-           
+
             '{environment} %s -m {task} {output}' % sys.executable
         """
         return '{environment} %s -m {task} {output}' % sys.executable
@@ -482,7 +482,7 @@ class RawJob(Job):
 
     def task_template(self):
         """Template::
-        
+
             '{task}'
         """
         return '{task}'

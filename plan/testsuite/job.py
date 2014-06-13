@@ -20,7 +20,7 @@ from plan.exceptions import ParseError, ValidationError
 
 class BasicTestCase(BaseTestCase):
     """Tests basic functions used by Job class."""
-    
+
     def test_is_month(self):
         self.assert_true(is_month('jan'))
         self.assert_true(is_month('JAN'))
@@ -39,7 +39,7 @@ class BasicTestCase(BaseTestCase):
     def test_get_frequency(self):
         self.assert_equal(3, get_frequency('3.month'))
         self.assert_equal(3, get_frequency('3.'))
-    
+
     def test_get_moment(self):
         self.assert_equal(3, get_moment('day.3'))
         self.assert_equal(3, get_moment('.3'))
@@ -126,7 +126,7 @@ class JobTestCase(BaseTestCase):
         self.assert_equal(job.cron, '0 0 * * 1,2,3,4,5 task')
         job = CommandJob('task', every='weekend')
         self.assert_equal(job.cron, '0 0 * * 6,0 task')
-    
+
     def test_every_parse_error(self):
         job = CommandJob('task', every='1.century')
         self.assert_raises(ParseError, lambda : job.cron)
@@ -191,7 +191,7 @@ class JobTestCase(BaseTestCase):
     def test_week_at(self):
         job = CommandJob('task', every='1.month', at='sunday')
         self.assert_equal(job.cron, '0 0 1 * 0 task')
-    
+
     def test_at(self):
         job = CommandJob('task', every='1.month', at='day.1 hour.1 minute.0')
         self.assert_equal(job.cron, '0 1 1 * * task')
@@ -272,11 +272,11 @@ class JobTestCase(BaseTestCase):
                             ' script.py > /dev/null 2>&1' % sys.executable)
 
     def test_module_job(self):
-        job = ModuleJob('calendar', every='1.day', 
+        job = ModuleJob('calendar', every='1.day',
                     environment={'key': 'value'}, output='null')
         self.assert_equal(job.cron, '0 0 * * * key=value %s -m calendar'
                                     ' > /dev/null 2>&1' % sys.executable)
-    
+
     def test_raw_job(self):
         job = RawJob('raw ????  my job', every='1.day')
         self.assert_equal(job.cron, '0 0 * * * raw ???? my job')

@@ -17,7 +17,7 @@ class Echo(object):
     """Echo class for Plan.  This is used to echo some common used content
     type in the command line.
     """
-    
+
     @classmethod
     def echo(cls, message):
         click.echo(message)
@@ -87,7 +87,7 @@ def quickstart(path):
 def prompt_choices(name, choices):
     """One wrapper function for click.prompt to show choices to the user.
     """
-    return click.prompt(name + ' - (%s)' % ', '.join(choices), 
+    return click.prompt(name + ' - (%s)' % ', '.join(choices),
                       type=click.Choice(choices), default=choices[0])
 
 

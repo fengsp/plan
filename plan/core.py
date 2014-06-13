@@ -20,7 +20,7 @@ from ._compat import string_types
 
 
 class Plan(object):
-    """The central object where you register jobs.  One Plan instance should 
+    """The central object where you register jobs.  One Plan instance should
     manage a group of jobs.
 
     :param name: the unique identity for this plan object, default to be main
@@ -29,7 +29,7 @@ class Plan(object):
     :param output: the global crontab job output logfile for this object.
     :param user: the user you want to run `crontab` command with.
     """
-    
+
     def __init__(self, name="main", path=None, environment=None,
                                                 output=None, user=None):
         self.name = name
@@ -78,7 +78,7 @@ class Plan(object):
         self.inject_kwargs(kwargs)
         job = ModuleJob(*args, **kwargs)
         self.job(job)
-    
+
     def raw(self, *args, **kwargs):
         """Register one raw job."""
         self.inject_kwargs(kwargs)
@@ -87,7 +87,7 @@ class Plan(object):
 
     def job(self, job):
         """Register one job.
-        
+
         :param job: one :class:`~plan.Job` instance.
         """
         self.jobs.append(job)
@@ -129,18 +129,18 @@ class Plan(object):
         # strip
         content = content.strip()
         content += "\n"
-        
+
         tmp_cronfile = tempfile.NamedTemporaryFile()
         tmp_cronfile.write(content)
         tmp_cronfile.flush()
-        
+
         # command used to write crontab
         # $ crontab -u username cronfile
         command = ['crontab']
         if self.user:
             command.extend(["-u", str(self.user)])
         command.append(tmp_cronfile.name)
-        
+
         try:
             subprocess.Popen(command).wait()
         except:
@@ -171,14 +171,14 @@ class Plan(object):
         """Update the current cronfile, used by run_type `update` or `clear`.
         This will find the block inside cronfile corresponding to this Plan
         object and replace it.
-        
+
         :param update_type: update or clear, if you choose update, the block
                             corresponding to this plan object will be replaced
                             with the new cron job entries, otherwise, they
                             will be wiped.
         """
         current_crontab = self.read_crontab()
-        
+
         if update_type == "update":
             action = "updated"
             crontab_content = self.cron_content
@@ -191,7 +191,7 @@ class Plan(object):
         comment_end_re = re.compile(r"^%s$" % self.comment_end, re.M)
         cron_block_re = re.compile(r"^%s$.+^%s$" % 
                        (self.comment_begin, self.comment_end), re.M|re.S)
-                       
+
         comment_begin_match = comment_begin_re.search(current_crontab)
         comment_end_match = comment_end_re.search(current_crontab)
 
@@ -228,7 +228,7 @@ class Plan(object):
 
     def run(self, run_type="check"):
         """Use this to do any action on this Plan object.
-        
+
         :param run_type: The running type, one of ("check", "write", 
                          "update", "clear"), default to be "check"
         """

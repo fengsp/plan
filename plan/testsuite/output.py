@@ -16,7 +16,7 @@ from plan.testsuite import BaseTestCase
 
 
 class OutputTestCase(BaseTestCase):
-    
+
     def test_from_none(self):
         output = str(Output())
         self.assert_equal(output, '')

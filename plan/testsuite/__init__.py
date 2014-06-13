@@ -19,7 +19,7 @@ class BaseTestCase(unittest.TestCase):
     """Baseclass for all the tests that Plan uses.  We use this
     BaseTestCase for code style consistency.
     """
-    
+
     def setup(self):
         pass
 

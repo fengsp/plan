@@ -19,7 +19,7 @@ from plan.testsuite import BaseTestCase
 
 
 class EchoTestRunner(object):
-    
+
     def __init__(self):
         self.runner = CliRunner()
 
@@ -32,7 +32,7 @@ class EchoTestRunner(object):
 
 
 class EchoTestCase(BaseTestCase):
-    
+
     def setup(self):
         self.runner = EchoTestRunner()
 

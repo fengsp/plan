@@ -28,19 +28,19 @@ class Output(object):
             return self.from_dict()
         else:
             raise TypeError("Illegal output value %s" % self.output)
-    
+
     def from_string(self):
         if self.output == "null":
             return "> /dev/null 2>&1"
         return self.output
-    
+
     def from_dict(self):
         stdout = self.output.get('stdout', '/dev/null')
         stderr = self.output.get('stderr', '/dev/null')
         if stdout == '/dev/null' and stderr == '/dev/null':
             return "> /dev/null 2>&1"
         elif stdout and stderr:
-            return ">> {stdout} 2>> {stderr}".format(stdout=stdout, 
+            return ">> {stdout} 2>> {stderr}".format(stdout=stdout,
                                                      stderr=stderr)
         elif stdout:
             return ">> {stdout}".format(stdout=stdout)

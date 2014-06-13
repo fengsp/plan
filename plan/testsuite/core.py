@@ -17,7 +17,7 @@ from plan.core import Plan
 
 
 class PlanTestCase(BaseTestCase):
- 
+
     def test_empty_cron_content(self):
         plan = Plan()
         desired_cron_content = """\
