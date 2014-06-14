@@ -26,7 +26,7 @@ values::
     [1-31].day
     [1-12].month
     jan feb mar apr may jun jul aug sep oct nov dec
-    and all of those full month names(case insenstive)
+    and all of those full month names(case insensitive)
     sunday, monday, tuesday, wednesday, thursday, friday, saturday
     weekday, weekend (case insensitive)
     [1].year
