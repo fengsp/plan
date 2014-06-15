@@ -16,7 +16,7 @@ PY2 = sys.version_info[0] == 2
 if not PY2:
     text_type = str
     string_types = (str,)
-    integer_types = (int, )
+    integer_types = (int,)
 
     iterkeys = lambda d: iter(d.keys())
     itervalues = lambda d: iter(d.values())
