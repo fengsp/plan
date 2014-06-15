@@ -12,6 +12,7 @@
 import re
 import sys
 import tempfile
+import shlex
 import subprocess
 
 from .commands import Echo
@@ -221,8 +222,7 @@ class Plan(object):
         if self.bootstrap_commands:
             Echo.echo("Starting bootstrap...")
             for command in self.bootstrap_commands:
-                command = re.sub(r'\s+', r' ', command)
-                command = command.split(' ')
+                command = shlex.split(command)
                 subprocess.Popen(command).wait()
             Echo.echo("Bootstrap finished!\n\n")
 
