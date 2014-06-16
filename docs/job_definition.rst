@@ -3,7 +3,7 @@
 Job Definition
 ==============
 
-This part shows you how to define a cron job in Plan.  One job takes following
+This part shows you how to define a cron job in Plan.  One job takes the following
 parameters ``task``, ``every``, ``at``, ``path``, ``environment`` and 
 ``output``, you can have a look at :class:`~plan.Job` for more details.
 Here is one example::
@@ -18,7 +18,7 @@ Here is one example::
 Every
 -----
 
-Every is used to define how often does the job run.  It takes the following
+Every is used to define how often the job runs.  It takes the following
 values::
     
     [1-60].minute
@@ -31,8 +31,8 @@ values::
     weekday, weekend (case insensitive)
     [1].year
 
-There might be some cron time that you can not get with Plan which comes with
-limited supporting syntax.  No worries, every takes raw cron syntax time
+There might be some cron time intervals that you cannot describe with Plan because of the
+limited supported syntax.  No worries, every takes raw cron syntax time
 definition, and in this case, your at value will be ignored. For example, I can
 do something like this::
     
@@ -53,7 +53,7 @@ will be ignored too, they are::
 At
 --
 
-At value is used to define when does the job run.  It takes the following
+At value is used to define when the job runs.  It takes the following
 values::
     
     minute.[0-59]
@@ -75,8 +75,8 @@ multiple values, for example I want to run one job every day at 12:15 and
 Path
 ----
 
-The path you want to change to before run the task, default to be current
-working directory.  For these job types that does not need one path, this
+The path you want to change to before the task is executed, defaults to the current
+working directory.  For job types that do not need one path, this
 will be ignored, for example, :class:`~plan.CommandJob`.
 
 
