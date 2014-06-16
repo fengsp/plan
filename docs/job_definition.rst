@@ -3,11 +3,11 @@
 Job Definition
 ==============
 
-This part shows you how to define a cron job in Plan.  One job takes the following
-parameters ``task``, ``every``, ``at``, ``path``, ``environment`` and 
-``output``, you can have a look at :class:`~plan.Job` for more details.
+This part shows you how to define a cron job in Plan.  One job takes the
+following parameters ``task``, ``every``, ``at``, ``path``, ``environment``
+and ``output``, you can have a look at :class:`~plan.Job` for more details.
 Here is one example::
-    
+
     from plan import Job
 
     job = Job('ruby script.rb', every='1.month', at='day.5',
@@ -20,7 +20,7 @@ Every
 
 Every is used to define how often the job runs.  It takes the following
 values::
-    
+
     [1-60].minute
     [1-24].hour
     [1-31].day
@@ -31,11 +31,11 @@ values::
     weekday, weekend (case insensitive)
     [1].year
 
-There might be some cron time intervals that you cannot describe with Plan because of the
-limited supported syntax.  No worries, every takes raw cron syntax time
-definition, and in this case, your at value will be ignored. For example, I can
-do something like this::
-    
+There might be some cron time intervals that you cannot describe with Plan
+because of the limited supported syntax.  No worries, every takes raw cron
+syntax time definition, and in this case, your at value will be ignored.
+For example, I can do something like this::
+
     job = Job('demo', every='1,2 5,6 * * 3,4')
 
 Also, every can be special predefined values, and in this case, your at value
@@ -53,9 +53,8 @@ will be ignored too, they are::
 At
 --
 
-At value is used to define when the job runs.  It takes the following
-values::
-    
+At value is used to define when the job runs.  It takes the following values::
+
     minute.[0-59]
     hour.[0-23]
     hour:minute
@@ -66,7 +65,7 @@ values::
 How about multiple at values, you can do that by using one space to seperate
 multiple values, for example I want to run one job every day at 12:15 and
 12:45, I can define it like this::
-    
+
     job = Job('onejob', every='1.day', at='hour.12 minute.15 minute.45')
     # or even better
     job = Job('onejob', every='1.day', at='12:15 12:45')
@@ -75,8 +74,8 @@ multiple values, for example I want to run one job every day at 12:15 and
 Path
 ----
 
-The path you want to change to before the task is executed, defaults to the current
-working directory.  For job types that do not need one path, this
+The path you want to change to before the task is executed, defaults to the
+current working directory.  For job types that do not need one path, this
 will be ignored, for example, :class:`~plan.CommandJob`.
 
 
@@ -91,13 +90,13 @@ Output
 ------
 
 The output redirection for the task.  It takes following values::
-    
+
     "null"
     any raw output string
     one dictionary to define your stdout and stderr
 
 For example::
-    
+
     job = Job('job', every='1.day', output='null')
     job = Job('job', every='1.day', output='> /tmp/stdout.log 2> /tmp/stderr.log')
     job = Job('job', every='1.day', output=

@@ -28,7 +28,7 @@ Basic
 -----
 
 Let's get our basic schedule file::
-    
+
     $ mkdir schedule
     $ cd schedule
     $ plan-quickstart
@@ -37,7 +37,7 @@ Now you can see a `schedule.py` under your schedule directory,
 ``plan-quickstart`` is the command that comes with Plan for creating one
 example file, you can run ``plan-quickstart --help`` for more details.  Then
 you can modify this file for your own needs, the file looks like this::
-    
+
     # -*- coding: utf-8 -*-
 
     # Use this file to easily define all of your cron jobs.
@@ -70,7 +70,7 @@ Let's begin with one little command, quite clear::
 
 Run ``python schedule.py`` and run it with check mode, you will see the
 following cron syntax content::
-    
+
     # Begin Plan generated jobs for: main
     0 0,4,8,12,16,20 * * * top >> /tmp/top_stdout.log 2>> /tmp/top_stderr.log
     # End Plan generated jobs for: main
@@ -84,12 +84,12 @@ Scripts
 -------
 
 I have one script I want to run every day::
-    
+
     cron.script('script.py', every='1.day', path='/web/yourproject/scripts',
                              environment={'YOURAPP_ENV': 'production'})
 
 And now we have one more cron entry::
-    
+
     0 0 * * * cd /web/yourproject/scripts && YOURAPP_ENV=production python script.py
 
 
@@ -103,12 +103,12 @@ want to put these jobs in one place, second we do not want to repeat the
 same path and environment parameter on all script jobs.  Luckily, you can do
 that easily with Plan, basically, every :class:`~plan.Plan` instance is a
 group of cron jobs::
-    
+
     $ cp schedule.py schedule_commands.py
     $ cp schedule.py schedule_scripts.py
 
 Now we modify schedule_commands.py::
-    
+
     from plan import Plan
 
     cron = Plan("commands")
