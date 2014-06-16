@@ -136,11 +136,10 @@ Then schedule_scripts.py::
         cron.run()
 
 A problem arises, how do you update your crontab content when you have two
-schedule files, it is simple, do not use ``write`` run-type, instead use,
-``update`` run-type here.  ``write`` run-type
-will replace the whole crontab cronfile content with that Plan object's
-cron content, ``update`` will just add or update the corresponding block
-distinguished by your Plan object name(here is ``"commands"`` and
-``"scripts"``).
+schedule files, it is simple, do not use ``write`` run-type, instead use
+``update`` run-type here.  ``write`` run-type will replace the whole crontab
+cronfile content with that Plan object's cron content, ``update`` will just
+add or update the corresponding block distinguished by your Plan object name
+(here is ``"commands"`` and ``"scripts"``).
 
 If you are still interested, now is your time to move on to the next part.
