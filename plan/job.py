@@ -68,7 +68,7 @@ def is_week(time):
     :param time: a string of time.
     """
     return time[:3].lower() in WEEK_MAP or \
-                        time.lower() in ('weekday', 'weekend')
+        time.lower() in ('weekday', 'weekend')
 
 
 def get_frequency(every):
@@ -106,7 +106,7 @@ class Job(object):
     """
 
     def __init__(self, task, every, at=None, path=None,
-                                             environment=None, output=None):
+                 environment=None, output=None):
         self.task = task
         self.every = every
         self.at = at
@@ -211,30 +211,30 @@ class Job(object):
 
         if '.minute' in every:
             every_type, frequency = MINUTE, get_frequency(every)
-            if not frequency in range(1, 61):
+            if frequency not in range(1, 61):
                 raise ParseError("Your every value %s is invalid, out of"
                                  " minute range[1-60]" % every)
         elif '.hour' in every:
             every_type, frequency = HOUR, get_frequency(every)
-            if not frequency in range(1, 25):
+            if frequency not in range(1, 25):
                 raise ParseError("Your every value %s is invalid, out of"
                                  " hour range[1-24]" % every)
         elif '.day' in every:
             every_type, frequency = DAY, get_frequency(every)
-            if not frequency in range(1, 32):
+            if frequency not in range(1, 32):
                 raise ParseError("Your every value %s is invalid, out of"
                                  " month day range[1-31]" % every)
         elif '.month' in every or is_month(every):
             every_type = MONTH
             if '.' in every:
                 frequency = get_frequency(every)
-                if not frequency in range(1, 13):
+                if frequency not in range(1, 13):
                     raise ParseError("Your every value %s is invalid, out of"
                                      " month range[1-12]" % every)
         elif '.year' in every:
             every_type, frequency = MONTH, get_frequency(every)
-            if not frequency in range(1, 2):
-                raise ParseError("Your every value %s is invalid, out of"  
+            if frequency not in range(1, 2):
+                raise ParseError("Your every value %s is invalid, out of"
                                  " year range[1]" % every)
             # Just handle months internally
             self.every = "12.months"
@@ -283,17 +283,17 @@ class Job(object):
         for at in ats:
             if 'minute.' in at:
                 at_type, moment = MINUTE, get_moment(at)
-                if not moment in range(60):
+                if moment not in range(60):
                     raise ParseError("Your at value %s is invalid"
                                      " out of minute range[0-59]" % self.at)
             elif 'hour.' in at:
                 at_type, moment = HOUR, get_moment(at)
-                if not moment in range(24):
+                if moment not in range(24):
                     raise ParseError("Your at value %s is invalid"
                                      " out of hour range[0-23]" % self.at)
             elif 'day.' in at:
                 at_type, moment = DAY, get_moment(at)
-                if not moment in range(1, 32):
+                if moment not in range(1, 32):
                     raise ParseError("Your at value %s is invalid"
                                      " out of month day range[1-31]" % self.at)
             elif 'month.' in at or 'year.' in at:
@@ -304,7 +304,7 @@ class Job(object):
                 moment = self.parse_week(at)
             else:
                 raise ParseError("Your at value %s is invalid" % self.at)
-            if not moment in at_map[at_type]:
+            if moment not in at_map[at_type]:
                 at_map[at_type].append(moment)
 
         # comma seperate same at_type moments
@@ -317,7 +317,7 @@ class Job(object):
     def validate_time(self):
         """Validate every and at value.
 
-        every can be:: 
+        every can be::
 
             [1-60].minute [1-24].hour [1-31].day
             [1-12].month [1].year

@@ -71,8 +71,8 @@ if __name__ == "__main__":
 
 
 @click.command()
-@click.option('--path', default='./schedule.py', type=click.File('wb'), 
-                           help='The filepath for your schedule file.')
+@click.option('--path', default='./schedule.py', type=click.File('wb'),
+              help='The filepath for your schedule file.')
 def quickstart(path):
     """plan-quickstart"""
     write = True
@@ -88,7 +88,7 @@ def prompt_choices(name, choices):
     """One wrapper function for click.prompt to show choices to the user.
     """
     return click.prompt(name + ' - (%s)' % ', '.join(choices),
-                      type=click.Choice(choices), default=choices[0])
+                        type=click.Choice(choices), default=choices[0])
 
 
 if __name__ == "__main__":
