@@ -242,5 +242,5 @@ class Plan(object):
             Echo.message("Your crontab file was not updated.")
 
     def __call__(self, run_type="check"):
-        """Shortcut for :method:`run`."""
+        """Shortcut for :meth:`run`."""
         self.run(run_type)
