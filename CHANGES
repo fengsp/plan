@@ -1,7 +1,17 @@
 Plan Changelog
 ==============
 
+
 Version 0.1
 -----------
 
 First public preview release.
+
+
+Version 0.2
+-----------
+
+Released on undetermined
+
+- various bugfixes
+- added support for Python 3.x
