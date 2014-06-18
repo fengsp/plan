@@ -149,7 +149,8 @@ class Plan(object):
                       "ensure your cronfile is valid.")
             sys.exit(1)
         else:
-            Echo.write("crontab file %s" % action)
+            if action:
+                Echo.write("crontab file %s" % action)
             sys.exit(0)
         finally:
             tmp_cronfile.close()

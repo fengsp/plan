@@ -54,7 +54,36 @@ class PlanTestCase(BaseTestCase):
         self.assert_equal(plan.cron_content, desired_cron_content)
 
 
+class CrontabTestCase(BaseTestCase):
+    """TestCase for communicating with crontab process."""
+
+    def setup(self):
+        self.plan = Plan()
+        self.original_crontab_content = self.plan.read_crontab()
+        self.write_crontab('', '')
+
+    def write_crontab(self, action, content):
+        self.assert_raises(SystemExit, self.plan._write_to_crontab, action,
+                           content)
+
+    def test_read_and_write_crontab(self):
+        test_crontab_content = """\
+# TEST BEGIN
+* * * * * test
+# TEST END
+"""
+
+        self.assert_equal(self.plan.read_crontab(), '\n')
+        self.write_crontab('', test_crontab_content)
+        self.assert_equal(self.plan.read_crontab(), test_crontab_content)
+
+    def teardown(self):
+        self.write_crontab('', self.original_crontab_content)
+        self.plan = None
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(PlanTestCase))
+    suite.addTest(unittest.makeSuite(CrontabTestCase))
     return suite
