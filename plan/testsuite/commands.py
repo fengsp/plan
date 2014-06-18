@@ -44,6 +44,11 @@ class EchoTestCase(BaseTestCase):
         self.assert_true(result.exit_code == 0)
         self.assert_equal(result.output, 'echo\n')
 
+    def test_secho(self):
+        result = self.runner.invoke(Echo.secho, 'secho')
+        self.assert_true(result.exit_code == 0)
+        self.assert_equal(result.output, 'secho\n')
+
     def test_message(self):
         result = self.runner.invoke(Echo.message, 'message')
         self.assert_true(result.exit_code == 0)

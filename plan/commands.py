@@ -25,27 +25,31 @@ class Echo(object):
         click.echo(message)
 
     @classmethod
+    def secho(cls, *args, **kwargs):
+        click.secho(*args, **kwargs)
+
+    @classmethod
     def message(cls, message):
-        cls.echo("[message] %s" % message)
+        cls.secho("[message] %s" % message, fg="green")
 
     @classmethod
     def write(cls, message):
-        cls.echo("[write] %s" % message)
+        cls.secho("[write] %s" % message, fg="green")
 
     @classmethod
     def fail(cls, message):
-        cls.echo("[fail] %s" % message)
+        cls.secho("[fail] %s" % message, fg="red")
 
     @classmethod
     def add(cls, message):
-        cls.echo("[add] %s" % message)
+        cls.secho("[add] %s" % message, fg="green")
 
     @classmethod
     def done(cls, message=None):
         if message:
-            cls.echo("[done] %s" % message)
+            cls.secho("[done] %s" % message, fg="green")
         else:
-            cls.echo("[done]!")
+            cls.secho("[done]!", fg="green")
 
 
 SCHEDULE_TEMPLATE = """\

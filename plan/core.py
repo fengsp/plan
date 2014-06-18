@@ -225,11 +225,11 @@ class Plan(object):
         """Run bootstrap commands.
         """
         if self.bootstrap_commands:
-            Echo.echo("Starting bootstrap...")
+            Echo.secho("Starting bootstrap...", fg="green")
             for command in self.bootstrap_commands:
                 command = shlex.split(command)
                 subprocess.Popen(command).wait()
-            Echo.echo("Bootstrap finished!\n\n")
+            Echo.secho("Bootstrap finished!\n\n", fg="green")
 
     def run(self, run_type="check"):
         """Use this to do any action on this Plan object.
