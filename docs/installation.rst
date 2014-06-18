@@ -3,7 +3,7 @@
 Installation
 ============
 
-You will need Python 2.7 or newer to get started, so firstly you should have
+You will need Python 2.6 or newer to get started, so firstly you should have
 an up to date Python 2.x installation.  If you want to use Plan with Python 3
 have a look at :ref:`python3-support`.
 

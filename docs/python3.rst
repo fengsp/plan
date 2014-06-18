@@ -3,8 +3,11 @@
 Python 3 Support
 ================
 
-Plan does not support Python 3 yet and I will work on it as soon as possible.
-Any help or pull requests are welcome.
+Plan and all of its dependencies support Python 3 so you can now start
+managing your cron jobs in Python 3 Now.  Though, Python 3 currently has
+very few users and a lot PyPI provided libraries do not support Python 3 yet.
+Unless you are aware of what you are doing, I recommend using Python 2.x until
+the whole ecosystem is ready.
 
 
 Requirements
