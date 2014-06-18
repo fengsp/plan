@@ -30,7 +30,7 @@ class PlanTestCase(BaseTestCase):
         plan = Plan()
         plan.command('command', every='1.day')
         plan.script('script.py', every='1.day', path='/web/scripts',
-                        environment={'key': 'value'}, output='null')
+                    environment={'key': 'value'}, output='null')
         plan.module('calendar', every='1.day')
         desired_cron_content = """\
 # Begin Plan generated jobs for: main
@@ -42,9 +42,9 @@ class PlanTestCase(BaseTestCase):
         self.assert_equal(plan.cron_content, desired_cron_content)
 
     def test_inject_kwargs(self):
-        plan = Plan('test', path='/web/scripts', 
-                            environment={'testkey': 'testvalue'},
-                            output=dict(stdout='/tmp/out.log'))
+        plan = Plan('test', path='/web/scripts',
+                    environment={'testkey': 'testvalue'},
+                    output=dict(stdout='/tmp/out.log'))
         plan.script('script.py', every='1.day')
         desired_cron_content = """\
 # Begin Plan generated jobs for: test

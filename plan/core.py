@@ -32,7 +32,7 @@ class Plan(object):
     """
 
     def __init__(self, name="main", path=None, environment=None,
-                                                output=None, user=None):
+                 output=None, user=None):
         self.name = name
         self.path = path
         self.environment = environment
@@ -115,7 +115,7 @@ class Plan(object):
     def cron_content(self):
         """Your schedule jobs converted to cron syntax."""
         return "\n".join([self.comment_begin] + self.crons +
-                                                [self.comment_end]) + "\n"
+                         [self.comment_end]) + "\n"
 
     def _write_to_crontab(self, action, content):
         """The inside method used to modify the current crontab cronfile.
@@ -190,8 +190,9 @@ class Plan(object):
         # Check for unbegined or unended block
         comment_begin_re = re.compile(r"^%s$" % self.comment_begin, re.M)
         comment_end_re = re.compile(r"^%s$" % self.comment_end, re.M)
-        cron_block_re = re.compile(r"^%s$.+^%s$" % 
-                       (self.comment_begin, self.comment_end), re.M|re.S)
+        cron_block_re = re.compile(r"^%s$.+^%s$" %
+                                   (self.comment_begin, self.comment_end),
+                                   re.M | re.S)
 
         comment_begin_match = comment_begin_re.search(current_crontab)
         comment_end_match = comment_end_re.search(current_crontab)
@@ -208,8 +209,8 @@ class Plan(object):
         # Found our existing block and replace it with the new one
         # Otherwise, append out new cron jobs after others
         if comment_begin_match and comment_end_match:
-            updated_content = cron_block_re.sub(crontab_content, 
-                                                        current_crontab)
+            updated_content = cron_block_re.sub(crontab_content,
+                                                current_crontab)
         else:
             updated_content = "\n\n".join((current_crontab, crontab_content))
 
@@ -229,7 +230,7 @@ class Plan(object):
     def run(self, run_type="check"):
         """Use this to do any action on this Plan object.
 
-        :param run_type: The running type, one of ("check", "write", 
+        :param run_type: The running type, one of ("check", "write",
                          "update", "clear"), default to be "check"
         """
         self.run_bootstrap_commands()

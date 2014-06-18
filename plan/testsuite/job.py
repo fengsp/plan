@@ -129,27 +129,27 @@ class JobTestCase(BaseTestCase):
 
     def test_every_parse_error(self):
         job = CommandJob('task', every='1.century')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='0.minute')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='61.minute')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='0.hour')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='25.hour')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='0.day')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='32.day')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='0.month')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='13.month')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='0.year')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='2.year')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
 
     def test_preprocess_at(self):
         job = Job('job', every='1.hour')
@@ -197,52 +197,52 @@ class JobTestCase(BaseTestCase):
         self.assert_equal(job.cron, '0 1 1 * * task')
         job = CommandJob('task', every='1.month', at='day.1 12:00')
         self.assert_equal(job.cron, '0 12 1 * * task')
-        job = CommandJob('task', every='1.month', 
-                                    at='day.1 hour.1 minute.5 minute.10')
+        job = CommandJob('task', every='1.month',
+                         at='day.1 hour.1 minute.5 minute.10')
         self.assert_equal(job.cron, '5,10 1 1 * * task')
         job = CommandJob('task', every='1.month',
-                                    at='day.15 10:55 10:56')
+                         at='day.15 10:55 10:56')
         self.assert_equal(job.cron, '55,56 10 15 * * task')
 
     def test_at_parse_error(self):
         job = CommandJob('task', every='jan', at='minute.60')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='jan', at='hour.24')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='jan', at='day.0')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='jan', at='day.32')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='jan', at='month.12')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='jan', at='year.1')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
         job = CommandJob('task', every='jan', at='whenever')
-        self.assert_raises(ParseError, lambda : job.cron)
+        self.assert_raises(ParseError, lambda: job.cron)
 
     def test_every_at_validation_error(self):
         job = CommandJob('task', every='1.minute', at='minute.1')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
         job = CommandJob('task', every='1.minute', at='hour.23')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
         job = CommandJob('task', every='1.minute', at='day.1')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
         job = CommandJob('task', every='1.minute', at='sunday')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
         job = CommandJob('task', every='1.hour', at='hour.23')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
         job = CommandJob('task', every='1.hour', at='day.1')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
         job = CommandJob('task', every='1.hour', at='sunday')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
         job = CommandJob('task', every='1.day', at='day.1')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
         job = CommandJob('task', every='1.day', at='sunday')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
         job = CommandJob('task', every='sunday', at='day.1')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
         job = CommandJob('task', every='sunday', at='sunday')
-        self.assert_raises(ValidationError, lambda : job.cron)
+        self.assert_raises(ValidationError, lambda: job.cron)
 
     def test_path(self):
         job = ScriptJob('script.py', every='1.day', path='/web/scripts')
@@ -251,15 +251,16 @@ class JobTestCase(BaseTestCase):
 
     def test_environment(self):
         job = ScriptJob('script.py', every='1.day', path='/web/scripts',
-                                            environment={'k': 'v'})
+                        environment={'k': 'v'})
         self.assert_equal(job.cron, '0 0 * * * cd /web/scripts && k=v %s'
-                                    ' script.py' % sys.executable)
+                          ' script.py' % sys.executable)
 
     def test_output(self):
         job = ScriptJob('script.py', every='1.day', path='/web/scripts',
-                    output=dict(stdout='/log/out.log', stderr='/log/err.log'))
+                        output=dict(stdout='/log/out.log',
+                                    stderr='/log/err.log'))
         self.assert_equal(job.cron, '0 0 * * * cd /web/scripts && %s script.py'
-                        ' >> /log/out.log 2>> /log/err.log' % sys.executable)
+                          ' >> /log/out.log 2>> /log/err.log' % sys.executable)
 
     def test_command_job(self):
         job = CommandJob('command', every='1.day', output='null')
@@ -267,13 +268,13 @@ class JobTestCase(BaseTestCase):
 
     def test_script_job(self):
         job = ScriptJob('script.py', every='1.day', path='/tmp',
-                    environment={'key': 'value'}, output='null')
+                        environment={'key': 'value'}, output='null')
         self.assert_equal(job.cron, '0 0 * * * cd /tmp && key=value %s'
-                            ' script.py > /dev/null 2>&1' % sys.executable)
+                          ' script.py > /dev/null 2>&1' % sys.executable)
 
     def test_module_job(self):
         job = ModuleJob('calendar', every='1.day',
-                    environment={'key': 'value'}, output='null')
+                        environment={'key': 'value'}, output='null')
         self.assert_equal(job.cron, '0 0 * * * key=value %s -m calendar'
                                     ' > /dev/null 2>&1' % sys.executable)
 
