@@ -17,4 +17,4 @@ cron.script('script_2.py', every='1.month', at='hour.12 minute.0')
 # more scripts here
 
 if __name__ == "__main__":
-    cron.run()
+    cron.run('update')

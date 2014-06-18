@@ -17,7 +17,7 @@ import subprocess
 
 from .commands import Echo
 from .job import CommandJob, ScriptJob, ModuleJob, RawJob
-from ._compat import string_types
+from ._compat import string_types, get_binary_content
 
 
 class Plan(object):
@@ -129,10 +129,11 @@ class Plan(object):
         content = re.sub(r'\n{4,}', r'\n\n\n', content)
         # strip
         content = content.strip()
-        content += "\n"
+        if content:
+            content += "\n"
 
         tmp_cronfile = tempfile.NamedTemporaryFile()
-        tmp_cronfile.write(content)
+        tmp_cronfile.write(get_binary_content(content))
         tmp_cronfile.flush()
 
         # command used to write crontab
@@ -166,8 +167,10 @@ class Plan(object):
         command = ['crontab', '-l']
         if self.user:
             command.extend(["-u", str(self.user)])
-        p = subprocess.Popen(command, stdout=subprocess.PIPE)
-        return p.stdout.read()
+        p = subprocess.Popen(command, stdout=subprocess.PIPE,
+                             universal_newlines=True)
+        output, error = p.communicate()
+        return output
 
     def update_crontab(self, update_type):
         """Update the current cronfile, used by run_type `update` or `clear`.

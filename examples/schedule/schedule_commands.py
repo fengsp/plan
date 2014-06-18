@@ -18,4 +18,4 @@ cron.command('yourcommand', every='sunday', at='hour.12 minute.0 minute.30')
 
 
 if __name__ == "__main__":
-    cron.run()
+    cron.run('update')

@@ -16,6 +16,7 @@ import collections
 
 from .output import Output
 from .exceptions import ParseError, ValidationError
+from ._compat import iteritems
 
 
 # Time types
@@ -50,8 +51,8 @@ WEEK_MAP = {
 }
 
 CRON_TIME_SYNTAX_RE = re.compile(r"^.+\s+.+\s+.+\s+.+\s+.+$")
-PREDEFINED_DEFINITIONS = {"yearly", "annually", "monthly", "weekly",
-                          "daily", "hourly", "reboot"}
+PREDEFINED_DEFINITIONS = set(["yearly", "annually", "monthly", "weekly",
+                              "daily", "hourly", "reboot"])
 
 
 def is_month(time):
@@ -122,7 +123,7 @@ class Job(object):
         if not self.environment:
             return ''
         kv_pairs = []
-        for k, v in self.environment.iteritems():
+        for k, v in iteritems(self.environment):
             kv_pairs.append('='.join((k, v)))
         return ' '.join(kv_pairs)
 
@@ -161,7 +162,7 @@ class Job(object):
             return '*'
         # otherwise, we make steps comma separated
         else:
-            times = range(start, maximum + 1, frequency)
+            times = list(range(start, maximum + 1, frequency))
             if length % frequency:
                 del times[0]
             times = map(str, times)
@@ -308,7 +309,7 @@ class Job(object):
                 at_map[at_type].append(moment)
 
         # comma seperate same at_type moments
-        for at_type, moments in at_map.iteritems():
+        for at_type, moments in iteritems(at_map):
             moments = map(str, moments)
             pairs[at_type] = ','.join(moments)
 

@@ -12,6 +12,8 @@ import os
 
 import click
 
+from ._compat import get_binary_content
+
 
 class Echo(object):
     """Echo class for Plan.  This is used to echo some common used content
@@ -80,7 +82,7 @@ def quickstart(path):
         write = click.confirm("'%s' already exists, override?" % path.name)
     if write:
         Echo.add("writing '%s'" % path.name)
-        path.write(SCHEDULE_TEMPLATE)
+        path.write(get_binary_content(SCHEDULE_TEMPLATE))
         Echo.done()
 
 

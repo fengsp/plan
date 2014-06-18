@@ -73,7 +73,7 @@ class CrontabTestCase(BaseTestCase):
 # TEST END
 """
 
-        self.assert_equal(self.plan.read_crontab(), '\n')
+        self.assert_equal(self.plan.read_crontab(), '')
         self.write_crontab('', test_crontab_content)
         self.assert_equal(self.plan.read_crontab(), test_crontab_content)
 

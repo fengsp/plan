@@ -29,3 +29,10 @@ else:
     iterkeys = lambda d: d.iterkeys()
     itervalues = lambda d: d.itervalues()
     iteritems = lambda d: d.iteritems()
+
+
+def get_binary_content(content):
+    """Get binary content for binary_writer."""
+    if isinstance(content, text_type):
+        return content.encode('utf-8')
+    return content
