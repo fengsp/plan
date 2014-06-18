@@ -4,6 +4,9 @@ get-docs: make-docs pack-docs
 test:
 	python test_plan.py
 
+tox-test:
+	tox
+
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +

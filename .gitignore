@@ -5,4 +5,4 @@
 dist
 build
 docs/_build
-TODO
+.tox/*
