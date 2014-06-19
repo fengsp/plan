@@ -20,3 +20,8 @@ make-docs:
 
 pack-docs:
 	cd docs/_build/html && zip -r ~/Desktop/plan-docs.zip ./*
+
+release:
+	python setup.py register
+	python setup.py sdist upload
+	python setup.py bdist_wheel upload
