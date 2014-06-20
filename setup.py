@@ -32,6 +32,7 @@ And run it:
 Links
 `````
 
+* `documentation <http://plan.readthedocs.org/>`_
 * `github <https://github.com/fengsp/plan>`_
 * `development version
   <http://github.com/fengsp/plan/zipball/master#egg=plan-dev>`_
