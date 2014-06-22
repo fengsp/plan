@@ -5,9 +5,9 @@ Python 3 Support
 
 Plan and all of its dependencies support Python 3 so you can start managing
 your cron jobs in Python 3 Now.  Though, Python 3 currently has very few users
-and a lot PyPI provided libraries do not support Python 3 yet.  Unless you are
-aware of what you are doing, I recommend using Python 2.x until the whole
-ecosystem is ready.
+and a lot PyPI provided libraries do not support Python 3 yet.  If you are a
+beginner, unless you are aware of what you are doing, I recommend using Python
+2.x until the whole ecosystem is ready.
 
 
 Requirements
