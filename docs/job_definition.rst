@@ -11,8 +11,8 @@ Here is one example::
     from plan import Job
 
     job = Job('ruby script.rb', every='1.month', at='day.5',
-                            path='/web/scripts', output='null',
-                            environment={'RAILS_ENV': 'production'})
+              path='/web/scripts', output='null',
+              environment={'RAILS_ENV': 'production'})
 
 
 Every
@@ -100,4 +100,4 @@ For example::
     job = Job('job', every='1.day', output='null')
     job = Job('job', every='1.day', output='> /tmp/stdout.log 2> /tmp/stderr.log')
     job = Job('job', every='1.day', output=
-                dict(stdout='/tmp/stdout.log', stderr='/tmp/stderr.log'))
+              dict(stdout='/tmp/stdout.log', stderr='/tmp/stderr.log'))

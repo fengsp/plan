@@ -51,10 +51,10 @@ you can modify this file for your own needs, the file looks like this::
 
     cron = Plan()
 
-    # cron.command('top', every='4.hour', output=
-            dict(stdout='/tmp/top_stdout.log', stderr='/tmp/top_stderr.log'))
-    # cron.script('script.py', every='1.day', path='/web/yourproject/scripts',
-                             environment={'YOURAPP_ENV': 'production'})
+    # register one command, script or module
+    # cron.command('command', every='1.day')
+    # cron.script('script.py', path='/web/yourproject/scripts', every='1.month')
+    # cron.module('calendar', every='feburary', at='day.3')
 
     if __name__ == "__main__":
         cron.run()
@@ -66,7 +66,8 @@ One Command
 Let's begin with one little command, quite clear::
 
     cron.command('top', every='4.hour', output=
-            dict(stdout='/tmp/top_stdout.log', stderr='/tmp/top_stderr.log'))
+                 dict(stdout='/tmp/top_stdout.log',
+                      stderr='/tmp/top_stderr.log'))
 
 Run ``python schedule.py`` and run it with check mode, you will see the
 following cron syntax content::
@@ -86,7 +87,7 @@ Scripts
 I have one script I want to run every day::
 
     cron.script('script.py', every='1.day', path='/web/yourproject/scripts',
-                             environment={'YOURAPP_ENV': 'production'})
+                environment={'YOURAPP_ENV': 'production'})
 
 And now we have one more cron entry::
 
@@ -114,7 +115,8 @@ Now we modify schedule_commands.py::
     cron = Plan("commands")
 
     cron.command('top', every='4.hour', output=
-              dict(stdout='/tmp/top_stdout.log', stderr='/tmp/top_stderr.log'))
+                 dict(stdout='/tmp/top_stdout.log',
+                      stderr='/tmp/top_stderr.log'))
     cron.command('yourcommand', every='sunday', at='hour.12 minute.0 minute.30')
     # more commands here
 
@@ -126,7 +128,7 @@ Then schedule_scripts.py::
     from plan import Plan
 
     cron = Plan("scripts", path='/web/yourproject/scripts',
-                                 environment={'YOURAPP_ENV': 'production'})
+                environment={'YOURAPP_ENV': 'production'})
 
     cron.script('script.py', every='1.day')
     cron.script('script_2.py', every='1.month', at='hour.12 minute.0')
