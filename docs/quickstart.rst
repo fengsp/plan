@@ -20,7 +20,7 @@ A simple usage looks like this::
     cron.command('pwd', every='2.month')
     cron.command('date', every='weekend')
 
-    if __name__ == "__main__":
+    if __name__ == '__main__':
         cron.run()
 
 Just save it as `schedule.py` (or whatever you want) and run it with your
@@ -38,6 +38,11 @@ output of terminal::
     0 0 * * 6,0 date
     # End Plan generated jobs for: main
 
+It seems everything goes fine, we can write it to crontab now::
+    
+    if __name__ == '__main__':
+        cron.run('write')
+
 
 Explanation
 -----------
@@ -53,4 +58,4 @@ So what did the above code do?
 3. We then use the :meth:`~plan.Plan.command` to register three command jobs on
    this Plan object.
 4. Finally we run this Plan object and check your cron syntax jobs or write
-   it to your crontab.
+   it to your crontab, see :ref:`run_types` for more details.
