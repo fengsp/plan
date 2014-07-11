@@ -77,16 +77,17 @@ if __name__ == "__main__":
 
 
 @click.command()
-@click.option('--path', default='./schedule.py', type=click.File('wb'),
+@click.option('--path', default='./schedule.py',
               help='The filepath for your schedule file.')
 def quickstart(path):
     """plan-quickstart"""
     write = True
-    if os.path.isfile(path.name):
-        write = click.confirm("'%s' already exists, override?" % path.name)
+    if os.path.isfile(path):
+        write = click.confirm("'%s' already exists, override?" % path)
     if write:
-        Echo.add("writing '%s'" % path.name)
-        path.write(get_binary_content(SCHEDULE_TEMPLATE))
+        Echo.add("writing '%s'" % path)
+        with open(path, 'wb') as f:
+            f.write(get_binary_content(SCHEDULE_TEMPLATE))
         Echo.done()
 
 

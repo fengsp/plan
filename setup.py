@@ -58,7 +58,7 @@ setup(
         ]
     },
     install_requires=[
-        'click==2.1'
+        'click>=2.1'
     ],
     zip_safe=False,
     classifiers=[
