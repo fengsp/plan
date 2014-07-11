@@ -11,7 +11,12 @@ First public preview release.
 Version 0.2
 -----------
 
-Released on undetermined
+Released on June 20th 2014
 
 - various bugfixes
 - added support for Python 3.x
+
+Version 0.3
+-----------
+
+Bugfix release, released on July 11th 2014
