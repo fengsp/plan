@@ -262,6 +262,12 @@ class JobTestCase(BaseTestCase):
         self.assert_equal(job.cron, '0 0 * * * cd /web/scripts && %s script.py'
                           ' >> /log/out.log 2>> /log/err.log' % sys.executable)
 
+    def test_job(self):
+        job = Job('job', every='1.day', path='/tmp',
+                  environment={'key': 'value'}, output='null')
+        self.assert_equal(job.cron, '0 0 * * * cd /tmp && key=value job '
+                          '> /dev/null 2>&1')
+
     def test_command_job(self):
         job = CommandJob('command', every='1.day', output='null')
         self.assert_equal(job.cron, '0 0 * * * command > /dev/null 2>&1')
