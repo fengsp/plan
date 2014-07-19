@@ -10,6 +10,7 @@
 """
 
 import re
+import os
 import sys
 import tempfile
 import shlex
@@ -17,6 +18,7 @@ import subprocess
 
 from .commands import Echo
 from .job import CommandJob, ScriptJob, ModuleJob, RawJob
+from .output import Output
 from ._compat import string_types, get_binary_content
 
 
@@ -34,23 +36,18 @@ class Plan(object):
     def __init__(self, name="main", path=None, environment=None,
                  output=None, user=None):
         self.name = name
-        self.path = path
+        if path is None:
+            self.path = os.getcwd()
+        else:
+            self.path = path
         self.environment = environment
-        self.output = output
+        self.output = str(Output(output))
         self.user = user
 
         # All commands should be executed before run
         self.bootstrap_commands = []
         # All jobs registered on this Plan object
         self.jobs = []
-
-    def inject_kwargs(self, kwargs):
-        if self.path:
-            kwargs.setdefault('path', self.path)
-        if self.environment:
-            kwargs.setdefault('environment', self.environment)
-        if self.output:
-            kwargs.setdefault('output', self.output)
 
     def bootstrap(self, command_or_commands):
         """Register bootstrap commands.
@@ -64,25 +61,21 @@ class Plan(object):
 
     def command(self, *args, **kwargs):
         """Register one command."""
-        self.inject_kwargs(kwargs)
         job = CommandJob(*args, **kwargs)
         self.job(job)
 
     def script(self, *args, **kwargs):
         """Register one script."""
-        self.inject_kwargs(kwargs)
         job = ScriptJob(*args, **kwargs)
         self.job(job)
 
     def module(self, *args, **kwargs):
         """Register one module."""
-        self.inject_kwargs(kwargs)
         job = ModuleJob(*args, **kwargs)
         self.job(job)
 
     def raw(self, *args, **kwargs):
         """Register one raw job."""
-        self.inject_kwargs(kwargs)
         job = RawJob(*args, **kwargs)
         self.job(job)
 
@@ -91,6 +84,12 @@ class Plan(object):
 
         :param job: one :class:`~plan.Job` instance.
         """
+        if self.path and not job.path:
+            job.path = self.path
+        if self.environment and not job.environment:
+            job.environment = self.environment
+        if self.output and not job.output:
+            job.output = self.output
         self.jobs.append(job)
 
     @property

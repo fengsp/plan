@@ -9,7 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import os
 import sys
 import re
 import collections
@@ -111,10 +110,7 @@ class Job(object):
         self.task = task
         self.every = every
         self.at = at
-        if path is None:
-            self.path = os.getcwd()
-        else:
-            self.path = path
+        self.path = path
         self.environment = environment
         self.output = str(Output(output))
 

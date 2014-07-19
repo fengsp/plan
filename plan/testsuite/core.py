@@ -41,11 +41,24 @@ class PlanTestCase(BaseTestCase):
 """ % (sys.executable, sys.executable)
         self.assert_equal(plan.cron_content, desired_cron_content)
 
-    def test_inject_kwargs(self):
+    def test_global_parameters(self):
         plan = Plan('test', path='/web/scripts',
                     environment={'testkey': 'testvalue'},
                     output=dict(stdout='/tmp/out.log'))
         plan.script('script.py', every='1.day')
+        desired_cron_content = """\
+# Begin Plan generated jobs for: test
+0 0 * * * cd /web/scripts && testkey=testvalue %s script.py >> /tmp/out.log 2>> /dev/null
+# End Plan generated jobs for: test
+""" % sys.executable
+        self.assert_equal(plan.cron_content, desired_cron_content)
+
+        plan = Plan('test', path='/web/global/scripts',
+                    environment={'globalkey': 'globalvalue'},
+                    output=dict(stdout='/tmp/global.log'))
+        plan.script('script.py', every='1.day', path='/web/scripts',
+                    environment={'testkey': 'testvalue'},
+                    output=dict(stdout='/tmp/out.log'))
         desired_cron_content = """\
 # Begin Plan generated jobs for: test
 0 0 * * * cd /web/scripts && testkey=testvalue %s script.py >> /tmp/out.log 2>> /dev/null
