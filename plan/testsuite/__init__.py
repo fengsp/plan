@@ -8,7 +8,7 @@
     :copyright: (c) 2014 by Shipeng Feng.
     :license: BSD, see LICENSE for more details.
 """
-
+import sys
 import pkgutil
 import unittest
 
@@ -53,6 +53,16 @@ class BaseTestCase(unittest.TestCase):
 
     def assert_isinstance(self, obj, cls):
         self.assertIsInstance(obj, cls)
+
+    if sys.version_info[:2] == (2, 6):
+        def assertIn(self, x, y):
+            assert x in y, "%r not found in %r" % (x, y)
+
+        def assertNotIn(self, x, y):
+            assert x not in y, "%r unexpectedly in %r" % (x, y)
+
+        def assertIsInstance(self, x, y):
+            assert isinstance(x, y), "not isinstance(%r, %r)" % (x, y)
 
 
 def import_string(import_name):
