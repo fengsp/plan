@@ -11,7 +11,6 @@
 
 import re
 import os
-import sys
 import tempfile
 import shlex
 import subprocess
@@ -20,6 +19,8 @@ from .commands import Echo
 from .job import CommandJob, ScriptJob, ModuleJob, RawJob
 from .output import Output
 from ._compat import string_types, get_binary_content
+from .exceptions import PlanError
+from .utils import communicate_process
 
 
 class Plan(object):
@@ -143,15 +144,16 @@ class Plan(object):
         command.append(tmp_cronfile.name)
 
         try:
-            subprocess.Popen(command).wait()
-        except:
-            Echo.fail("couldn't write crontab; try running check to "
-                      "ensure your cronfile is valid.")
-            sys.exit(1)
+            output, error, returncode = communicate_process(command)
+            if returncode != 0:
+                raise PlanError("couldn't write crontab; try running check to "
+                                "ensure your cronfile is valid.")
+        except OSError:
+            raise PlanError("couldn't write crontab; please make sure you "
+                            "have crontab installed")
         else:
             if action:
                 Echo.write("crontab file %s" % action)
-            sys.exit(0)
         finally:
             tmp_cronfile.close()
 
@@ -166,9 +168,14 @@ class Plan(object):
         command = ['crontab', '-l']
         if self.user:
             command.extend(["-u", str(self.user)])
-        p = subprocess.Popen(command, stdout=subprocess.PIPE,
-                             universal_newlines=True)
-        output, error = p.communicate()
+        try:
+            r = communicate_process(command, universal_newlines=True)
+            output, error, returncode = r
+            if returncode != 0:
+                raise PlanError("couldn't read crontab")
+        except OSError:
+            raise PlanError("couldn't read crontab; please make sure you "
+                            "have crontab installed")
         return output
 
     def update_crontab(self, update_type):
@@ -201,13 +208,13 @@ class Plan(object):
         comment_end_match = comment_end_re.search(current_crontab)
 
         if comment_begin_match and not comment_end_match:
-            Echo.fail("Your crontab file is not ended, it contains '%s', "
-                      "but no '%s'" % (self.comment_begin, self.comment_end))
-            sys.exit(1)
+            raise PlanError("Your crontab file is not ended, it contains "
+                            "'%s', but no '%s'" % (self.comment_begin,
+                                                   self.comment_end))
         elif not comment_begin_match and comment_end_match:
-            Echo.fail("Your crontab file has no begining, it contains '%s', "
-                      "but no '%s'" % (self.comment_end, self.comment_begin))
-            sys.exit(1)
+            raise PlanError("Your crontab file has no begining, it contains "
+                            "'%s', but no '%s'" % (self.comment_end,
+                                                   self.comment_begin))
 
         # Found our existing block and replace it with the new one
         # Otherwise, append out new cron jobs after others
@@ -227,7 +234,7 @@ class Plan(object):
             Echo.secho("Starting bootstrap...", fg="green")
             for command in self.bootstrap_commands:
                 command = shlex.split(command)
-                subprocess.Popen(command).wait()
+                subprocess.call(command)
             Echo.secho("Bootstrap finished!\n\n", fg="green")
 
     def run(self, run_type="check"):

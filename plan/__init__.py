@@ -13,3 +13,4 @@ __version__ = '0.4-dev'
 
 from .core import Plan
 from .job import Job, CommandJob, ScriptJob, ModuleJob, RawJob
+from .exceptions import PlanError, ParseError, ValidationError

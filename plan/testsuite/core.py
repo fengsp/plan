@@ -14,6 +14,7 @@ import unittest
 
 from plan.testsuite import BaseTestCase
 from plan.core import Plan
+from plan.exceptions import PlanError
 
 
 class PlanTestCase(BaseTestCase):
@@ -76,8 +77,7 @@ class CrontabTestCase(BaseTestCase):
         self.write_crontab('', '')
 
     def write_crontab(self, action, content):
-        self.assert_raises(SystemExit, self.plan._write_to_crontab, action,
-                           content)
+        self.plan._write_to_crontab(action, content)
 
     def test_read_and_write_crontab(self):
         test_crontab_content = """\
@@ -89,6 +89,29 @@ class CrontabTestCase(BaseTestCase):
         self.assert_equal(self.plan.read_crontab(), '')
         self.write_crontab('', test_crontab_content)
         self.assert_equal(self.plan.read_crontab(), test_crontab_content)
+
+    def test_update_crontab_error(self):
+        test_crontab_content = """\
+# Begin Plan generated jobs for: main
+0 12 * * * ls /tmp
+# End Plan generated jobs for:
+"""
+        self.write_crontab('', test_crontab_content)
+        self.assert_raises(PlanError, self.plan.update_crontab, 'update')
+        test_crontab_content = """\
+# Begin Plan generated jobs for:
+0 12 * * * ls /tmp
+# End Plan generated jobs for: main
+"""
+        self.write_crontab('', test_crontab_content)
+        self.assert_raises(PlanError, self.plan.update_crontab, 'update')
+
+    def test_write_crontab_error(self):
+        test_crontab_content = """\
+test
+"""
+        self.assert_raises(PlanError, self.write_crontab, '',
+                           test_crontab_content)
 
     def teardown(self):
         self.write_crontab('', self.original_crontab_content)

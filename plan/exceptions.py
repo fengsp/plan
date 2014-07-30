@@ -41,6 +41,10 @@ class BaseError(Exception):
                     return message
 
 
+class PlanError(BaseError):
+    """Plan error."""
+
+
 class ParseError(BaseError):
     """Plan job every and at value parse error."""
 
