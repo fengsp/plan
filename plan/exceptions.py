@@ -42,7 +42,10 @@ class BaseError(Exception):
 
 
 class PlanError(BaseError):
-    """Plan error."""
+    """Plan error.
+
+    .. versionadded:: 0.4
+    """
 
 
 class ParseError(BaseError):

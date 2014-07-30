@@ -43,7 +43,7 @@ from setuptools import setup
 
 setup(
     name='plan',
-    version='0.3',
+    version='0.4',
     url='https://github.com/fengsp/plan',
     license='BSD',
     author='Shipeng Feng',

@@ -20,3 +20,10 @@ Version 0.3
 -----------
 
 Bugfix release, released on July 11th 2014
+
+Version 0.4
+-----------
+
+Released on July 30th 2014
+
+- replace SystemExit with PlanError when something went wrong
