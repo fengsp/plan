@@ -35,7 +35,7 @@ class Plan(object):
     """
 
     def __init__(self, name="main", path=None, environment=None,
-                 output=None, user=None):
+                 output=None, user=None, mailto=None):
         self.name = name
         if path is None:
             self.path = os.getcwd()
@@ -49,6 +49,7 @@ class Plan(object):
         self.bootstrap_commands = []
         # All jobs registered on this Plan object
         self.jobs = []
+        self.mailto = mailto or []
 
     def bootstrap(self, command_or_commands):
         """Register bootstrap commands.
@@ -100,7 +101,12 @@ class Plan(object):
         distinguish different Plan object, so we can locate the cronfile
         content corresponding to this object.
         """
-        return "# Begin Plan generated jobs for: %s" % self.name
+        begin_comment = "# Begin Plan generated jobs for: %s" % self.name
+        if self.mailto:
+            begin_comment += '\n# Jobs will send mail to users below'
+            mailto = 'MAILTO=%s' % ','.join(self.mailto)
+            begin_comment += '\n%s' % mailto
+        return begin_comment
 
     @property
     def crons(self):
