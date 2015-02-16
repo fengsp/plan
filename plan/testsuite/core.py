@@ -42,6 +42,18 @@ class PlanTestCase(BaseTestCase):
 """ % (sys.executable, sys.executable)
         self.assert_equal(plan.cron_content, desired_cron_content)
 
+    def test_environment_variables(self):
+        plan = Plan()
+        plan.env('MAILTO', 'user@example.com')
+        plan.command('command', every='1.day')
+        desired_cron_content = """\
+# Begin Plan generated jobs for: main
+MAILTO="user@example.com"
+0 0 * * * command
+# End Plan generated jobs for: main
+"""
+        self.assert_equal(plan.cron_content, desired_cron_content)
+
     def test_global_parameters(self):
         plan = Plan('test', path='/web/scripts',
                     environment={'testkey': 'testvalue'},

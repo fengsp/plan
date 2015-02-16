@@ -25,6 +25,20 @@ If you want to run `crontab` command with a certain user, remember to set
 this parameter.
 
 
+Environment Variable
+--------------------
+
+Sometimes you need to set environment variable in the crontab.  For example
+you want to change crontab email settings, you can do it as simple like this::
+
+    cron = Plan()
+    cron.env('MAILTO', 'user@example.com')
+    cron.command('command', every='1.day')
+    cron.run('check')
+
+For more details check out :meth:`~plan.Plan.env`.
+
+
 Bootstrap
 ---------
 

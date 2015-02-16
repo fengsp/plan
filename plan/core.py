@@ -47,6 +47,8 @@ class Plan(object):
 
         # All commands should be executed before run
         self.bootstrap_commands = []
+        # All environment settings on this Plan object
+        self.envs = {}
         # All jobs registered on this Plan object
         self.jobs = []
 
@@ -60,23 +62,35 @@ class Plan(object):
         elif isinstance(command_or_commands, list):
             self.bootstrap_commands.extend(command_or_commands)
 
+    def env(self, variable, value):
+        """Add one environment variable for this Plan object in the crontab.
+
+        :param variable: environment variable name.
+        :param value: environment variable value.
+        """
+        self.envs[variable] = value
+
     def command(self, *args, **kwargs):
-        """Register one command."""
+        """Register one command, takes the same parameters as
+        :class:`~plan.Job`."""
         job = CommandJob(*args, **kwargs)
         self.job(job)
 
     def script(self, *args, **kwargs):
-        """Register one script."""
+        """Register one script, takes the same parameters as
+        :class:`~plan.Job`."""
         job = ScriptJob(*args, **kwargs)
         self.job(job)
 
     def module(self, *args, **kwargs):
-        """Register one module."""
+        """Register one module, takes the same parameters as
+        :class:`~plan.Job`."""
         job = ModuleJob(*args, **kwargs)
         self.job(job)
 
     def raw(self, *args, **kwargs):
-        """Register one raw job."""
+        """Register one raw job, takes the same parameters as
+        :class:`~plan.Job`."""
         job = RawJob(*args, **kwargs)
         self.job(job)
 
@@ -103,6 +117,17 @@ class Plan(object):
         return "# Begin Plan generated jobs for: %s" % self.name
 
     @property
+    def environment_variables(self):
+        """Return a list of crontab environment settings's cron syntax
+        content."""
+        variables = []
+        for variable, value in self.envs.items():
+            if value is not None:
+                value = '"%s"' % str(value)
+                variables.append("%s=%s" % (str(variable), value))
+        return variables
+
+    @property
     def crons(self):
         """Return a list of registered jobs's cron syntax content."""
         return [job.cron for job in self.jobs]
@@ -114,8 +139,8 @@ class Plan(object):
     @property
     def cron_content(self):
         """Your schedule jobs converted to cron syntax."""
-        return "\n".join([self.comment_begin] + self.crons +
-                         [self.comment_end]) + "\n"
+        return "\n".join([self.comment_begin] + self.environment_variables +
+                         self.crons + [self.comment_end]) + "\n"
 
     def _write_to_crontab(self, action, content):
         """The inside method used to modify the current crontab cronfile.
