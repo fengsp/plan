@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = '0.5'
+__version__ = '0.6-dev'
 
 from .core import Plan
 from .job import Job, CommandJob, ScriptJob, ModuleJob, RawJob
