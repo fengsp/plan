@@ -28,6 +28,8 @@ this parameter.
 Environment Variable
 --------------------
 
+.. versionadded:: 0.5
+
 Sometimes you need to set environment variable in the crontab.  For example
 you want to change crontab email settings, you can do it as simple like this::
 

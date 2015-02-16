@@ -29,3 +29,11 @@ Version 0.4
 Released on July 30th 2014
 
 - replace SystemExit with PlanError when something went wrong
+
+
+Version 0.5
+-----------
+
+Released on Feb 16th 2015
+
+- added environment variable support

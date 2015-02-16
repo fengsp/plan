@@ -65,6 +65,8 @@ class Plan(object):
     def env(self, variable, value):
         """Add one environment variable for this Plan object in the crontab.
 
+        .. versionadded:: 0.5
+
         :param variable: environment variable name.
         :param value: environment variable value.
         """
@@ -119,7 +121,10 @@ class Plan(object):
     @property
     def environment_variables(self):
         """Return a list of crontab environment settings's cron syntax
-        content."""
+        content.
+
+        .. versionadded:: 0.5
+        """
         variables = []
         for variable, value in self.envs.items():
             if value is not None:
