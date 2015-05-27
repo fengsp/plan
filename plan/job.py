@@ -208,29 +208,29 @@ class Job(object):
 
         if '.minute' in every:
             every_type, frequency = MINUTE, get_frequency(every)
-            if frequency not in range(1, 61):
+            if not 0 < frequency < 61:
                 raise ParseError("Your every value %s is invalid, out of"
                                  " minute range[1-60]" % every)
         elif '.hour' in every:
             every_type, frequency = HOUR, get_frequency(every)
-            if frequency not in range(1, 25):
+            if not 0 < frequency < 25:
                 raise ParseError("Your every value %s is invalid, out of"
                                  " hour range[1-24]" % every)
         elif '.day' in every:
             every_type, frequency = DAY, get_frequency(every)
-            if frequency not in range(1, 32):
+            if not 0 < frequency < 32:
                 raise ParseError("Your every value %s is invalid, out of"
                                  " month day range[1-31]" % every)
         elif '.month' in every or is_month(every):
             every_type = MONTH
             if '.' in every:
                 frequency = get_frequency(every)
-                if frequency not in range(1, 13):
+                if not 0 < frequency < 13:
                     raise ParseError("Your every value %s is invalid, out of"
                                      " month range[1-12]" % every)
         elif '.year' in every:
             every_type, frequency = MONTH, get_frequency(every)
-            if frequency not in range(1, 2):
+            if frequency is not 1:
                 raise ParseError("Your every value %s is invalid, out of"
                                  " year range[1]" % every)
             # Just handle months internally
