@@ -154,17 +154,17 @@ class JobTestCase(BaseTestCase):
     def test_preprocess_at(self):
         job = Job('job', every='1.hour')
         at = job.preprocess_at('0:0')
-        self.assert_equal(at, 'hour.0 minute.0')
+        self.assert_equal(' '.join(at), 'hour.0 minute.0')
         at = job.preprocess_at('1:00')
-        self.assert_equal(at, 'hour.1 minute.0')
+        self.assert_equal(' '.join(at), 'hour.1 minute.0')
         at = job.preprocess_at('23:01')
-        self.assert_equal(at, 'hour.23 minute.1')
+        self.assert_equal(' '.join(at), 'hour.23 minute.1')
         at = job.preprocess_at('23:10')
-        self.assert_equal(at, 'hour.23 minute.10')
+        self.assert_equal(' '.join(at), 'hour.23 minute.10')
         at = job.preprocess_at('12:59')
-        self.assert_equal(at, 'hour.12 minute.59')
+        self.assert_equal(' '.join(at), 'hour.12 minute.59')
         at = job.preprocess_at('14:09:0')
-        self.assert_equal(at, 'hour.14 minute.9')
+        self.assert_equal(' '.join(at), 'hour.14 minute.9')
 
     def test_minute_at(self):
         job = CommandJob('task', every='1.hour', at='minute.5')

@@ -261,7 +261,7 @@ class Job(object):
                 processed_ats.append(minute)
             else:
                 processed_ats.append(at)
-        return ' '.join(processed_ats)
+        return processed_ats
 
     def parse_at(self):
         """Parse at value into (at_type, moment) pairs.
@@ -270,8 +270,7 @@ class Job(object):
         if not self.at:
             return pairs
 
-        processed_at = self.preprocess_at(self.at)
-        ats = processed_at.split(' ')
+        ats = self.preprocess_at(self.at)
         at_map = collections.defaultdict(list)
 
         # Parse at value into (at_type, moments_list) pairs.
