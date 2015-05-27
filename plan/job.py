@@ -279,17 +279,17 @@ class Job(object):
         for at in ats:
             if 'minute.' in at:
                 at_type, moment = MINUTE, get_moment(at)
-                if moment not in range(60):
+                if not 0 <= moment < 60:
                     raise ParseError("Your at value %s is invalid"
                                      " out of minute range[0-59]" % self.at)
             elif 'hour.' in at:
                 at_type, moment = HOUR, get_moment(at)
-                if moment not in range(24):
+                if not 0 <= moment < 24:
                     raise ParseError("Your at value %s is invalid"
                                      " out of hour range[0-23]" % self.at)
             elif 'day.' in at:
                 at_type, moment = DAY, get_moment(at)
-                if moment not in range(1, 32):
+                if not 0 < moment < 32:
                     raise ParseError("Your at value %s is invalid"
                                      " out of month day range[1-31]" % self.at)
             elif 'month.' in at or 'year.' in at:
