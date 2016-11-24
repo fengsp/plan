@@ -15,9 +15,8 @@ import tempfile
 import shlex
 import subprocess
 
-from plan.job import RawSyntaxCommandJob
 from .commands import Echo
-from .job import CommandJob, ScriptJob, ModuleJob, RawJob
+from .job import CommandJob, ScriptJob, ModuleJob, RawJob, RawSyntaxCommandJob
 from .output import Output
 from ._compat import string_types, get_binary_content
 from .exceptions import PlanError
