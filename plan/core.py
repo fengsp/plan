@@ -15,6 +15,7 @@ import tempfile
 import shlex
 import subprocess
 
+from plan.job import RawSyntaxCommandJob
 from .commands import Echo
 from .job import CommandJob, ScriptJob, ModuleJob, RawJob
 from .output import Output
@@ -76,6 +77,12 @@ class Plan(object):
         """Register one command, takes the same parameters as
         :class:`~plan.Job`."""
         job = CommandJob(*args, **kwargs)
+        self.job(job)
+
+    def rawtime(self, *args, **kwargs):
+        """Register one command, takes the same parameters as
+        :class:`~plan.Job`."""
+        job = RawSyntaxCommandJob(*args, **kwargs)
         self.job(job)
 
     def script(self, *args, **kwargs):
