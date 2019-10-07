@@ -8,7 +8,7 @@
     :copyright: (c) 2014 by Shipeng Feng.
     :license: BSD, see LICENSE for more details.
 """
-
+import getpass
 import re
 import os
 import tempfile
@@ -31,7 +31,8 @@ class Plan(object):
     :param path: the global path you want to run the task on.
     :param environment: the global crontab job bash environment.
     :param output: the global crontab job output logfile for this object.
-    :param user: the user you want to run `crontab` command with.
+    :param user: the user you want to run `crontab` command with
+                 (if no user passed - current user will be used)
     """
 
     def __init__(self, name="main", path=None, environment=None,
@@ -43,7 +44,7 @@ class Plan(object):
             self.path = path
         self.environment = environment
         self.output = str(Output(output))
-        self.user = user
+        self.user = user or getpass.getuser()
 
         # All commands should be executed before run
         self.bootstrap_commands = []
