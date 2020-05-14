@@ -1,0 +1,15 @@
+FROM python:2.7.13
+
+RUN apt-get update && apt-get -y install cron
+
+RUN pip install plan
+
+WORKDIR /home
+
+RUN touch /var/log/stderr.log \
+    && touch /var/log/stdout.log
+
+RUN ln -sf /proc/1/fd/1 /var/log/stdout.log \
+&& ln -sf /proc/1/fd/1 /var/log/stderr.log
+
+CMD python schedule.py && cron -f

@@ -1,0 +1,7 @@
+version: '3.3'
+services:
+  plan:
+    build:
+      context: ./
+    volumes:
+      - ./:/home
