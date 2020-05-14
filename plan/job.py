@@ -189,7 +189,7 @@ class Job(object):
                          sun mon tue wed thu fri sat
                          sunday monday tuesday wednesday thursday friday
                          saturday
-                         weekday weedend(case insenstive)
+                         weekday weekend(case insenstive)
         """
         if week.lower() == "weekday":
             return "1,2,3,4,5"
