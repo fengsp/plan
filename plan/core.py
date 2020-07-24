@@ -174,7 +174,7 @@ class Plan(object):
         command.append(tmp_cronfile.name)
 
         try:
-            output, error, returncode = communicate_process(command)
+            output, error, returncode = communicate_process(command, encoding='utf-8')
             if returncode != 0:
                 raise PlanError("couldn't write crontab; try running check to "
                                 "ensure your cronfile is valid.")
@@ -199,7 +199,7 @@ class Plan(object):
         if self.user:
             command.extend(["-u", str(self.user)])
         try:
-            r = communicate_process(command, universal_newlines=True)
+            r = communicate_process(command, universal_newlines=True, encoding='utf-8')
             output, error, returncode = r
             if returncode != 0:
                 raise PlanError("couldn't read crontab")
