@@ -3,7 +3,7 @@
 Run Types
 =========
 
-There are several mode Plan can run on, you shoud pass the run_type parameter
+There are several mode Plan can run on, you should pass the run_type parameter
 when you run your plan object, check out :meth:`~plan.Plan.run`, for example::
     
     cron = Plan()
