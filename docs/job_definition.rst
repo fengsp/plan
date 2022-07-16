@@ -62,7 +62,7 @@ At value is used to define when the job runs.  It takes the following values::
     sunday, monday, tuesday, wednesday, thursday, friday, saturday
     weekday, weekend (case insensitive)
 
-How about multiple at values, you can do that by using one space to seperate
+How about multiple at values, you can do that by using one space to separate
 multiple values, for example I want to run one job every day at 12:15 and
 12:45, I can define it like this::
 

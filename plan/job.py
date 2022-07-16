@@ -171,7 +171,7 @@ class Job(object):
         :param month: this parameter can be the following values:
 
                           jan feb mar apr may jun jul aug sep oct nov dec
-                          and all of those full month names(case insenstive)
+                          and all of those full month names(case insensitive)
                           or <int:n>.month
         """
         if '.' in month:
@@ -189,7 +189,7 @@ class Job(object):
                          sun mon tue wed thu fri sat
                          sunday monday tuesday wednesday thursday friday
                          saturday
-                         weekday weekend(case insenstive)
+                         weekday weekend(case insensitive)
         """
         if week.lower() == "weekday":
             return "1,2,3,4,5"
@@ -304,7 +304,7 @@ class Job(object):
             if moment not in at_map[at_type]:
                 at_map[at_type].append(moment)
 
-        # comma seperate same at_type moments
+        # comma separate same at_type moments
         for at_type, moments in iteritems(at_map):
             moments = map(str, moments)
             pairs[at_type] = ','.join(moments)
@@ -332,7 +332,7 @@ class Job(object):
                                  minute.[0-59], hour.[0-23]
             when every is day of week, can be minute.[0-59], hour.[0-23]
 
-            at can also be multiple at values seperated by one space.
+            at can also be multiple at values separated by one space.
         """
         every_type, every = self.parse_every(), self.every
         ats = self.parse_at()
